@@ -1,36 +1,30 @@
 package main
 
 import (
-	//"encoding/xml"
+	"bytes"
+	"encoding/xml"
+	"fmt"
+	"io"
 	"os"
-	"text/template"
+	//"text/template"
 )
 
-type Interface struct {
-	Name  string
-	Funcs []handler
-}
-type handler struct {
-	Ident  string
-	Args   []vars
-	Return []vars
-	Body   string
-}
-type vars struct {
-	Ident string
-	Type  string
-}
-
 func main() {
-	t := template.Must(template.New("t1").Parse(BaseTemplate))
+	importProtocol()
+}
 
-	t.Execute(os.Stdout,
-		Interface{"Foo",
-			[]handler{{
-				"Bar",
-				[]vars{{"Baz", "int"}, {"Boo", "float"}},
-				[]vars{{"", "interface{}"}, {"", "*int"}}, ""}, {
-				"Bee",
-				[]vars{{"Boom", "float32"}},
-				[]vars{{"", "error"}}, ""}}})
+func importProtocol() {
+	f, err := os.Open("wayland.xml")
+	if err != nil {
+		panic(err)
+	}
+	proto := new(Protocol)
+	buf := new(bytes.Buffer)
+	if _, err := buf.ReadFrom(f); err != nil && err != io.EOF {
+		panic(err)
+	}
+
+	if err := xml.Unmarshal(buf.Bytes(), proto); err != nil {
+		panic(err)
+	}
 }
