@@ -3,10 +3,9 @@ package main
 import (
 	"bytes"
 	"encoding/xml"
-	"fmt"
 	"io"
 	"os"
-	//"text/template"
+	"text/template"
 )
 
 func main() {
@@ -26,5 +25,16 @@ func importProtocol() {
 
 	if err := xml.Unmarshal(buf.Bytes(), proto); err != nil {
 		panic(err)
+	}
+	stripAndCap(proto)
+	for _, in := range proto.Interface {
+		f, err := os.Create("../" + in.Name + ".go")
+		if err != nil {
+			panic(err)
+		}
+		tmpl := template.Must(template.New("pkg").Parse(pkgTemplate))
+		if err := tmpl.Execute(f, in); err != nil {
+			panic(err)
+		}
 	}
 }

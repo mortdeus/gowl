@@ -1128,6 +1128,7 @@
 
   <Interface name="wl_keyboard" version="1">
     <Description summary="keyboard input device">
+      keyboard input device
     </Description>
 
     <Enum name="keymap_format">

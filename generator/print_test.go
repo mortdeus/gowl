@@ -7,13 +7,10 @@ import (
 	"io"
 	"os"
 	//"text/template"
+	"testing"
 )
 
-func main() {
-	importProtocol()
-}
-
-func importProtocol() {
+func TestPrintProtocol(t *testing.T) {
 	f, err := os.Open("wayland.xml")
 	if err != nil {
 		panic(err)
