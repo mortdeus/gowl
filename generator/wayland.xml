@@ -1119,7 +1119,6 @@
 	When applicable, clients can transform its view relative to the
 	scroll distance.
       </Description>
-
       <Arg name="time" type="uint"/>
       <Arg name="axis" type="uint"/>
       <Arg name="value" type="fixed"/>
@@ -1270,9 +1269,9 @@
       </Description>
 
       <Entry name="normal" value="0"/>
-      <Entry name="90" value="1"/>
-      <Entry name="180" value="2"/>
-      <Entry name="270" value="3"/>
+      <Entry name="Rot90" value="1"/>
+      <Entry name="Rot180" value="2"/>
+      <Entry name="Rot270" value="3"/>
       <Entry name="flipped" value="4"/>
       <Entry name="flipped_90" value="5"/>
       <Entry name="flipped_180" value="6"/>
