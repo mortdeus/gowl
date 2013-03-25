@@ -54,27 +54,28 @@ var (
 	{{if .Description}}/*
 	{{.Description}}
 	*/{{end}}
-
 	type {{.Name}} struct{}
 
-		{{range $.Enum}}
+		{{range $e := $.Enum}}
 			{{if .Description}}/*
-			{{.Description}}
-			*/{{end}}
-			var {{.Name}} int
+			{{.Description}}*/{{end}}
+			
 			const(
-				{{range .Entry}}
-				{{.Name}} = {{.Value}} 
+				{{range .Entry}}{{$e.Name}}_{{.Name}} = {{.Value}}
 				{{end}}
 			)
 		{{end}}
 
 		{{range $.Request}}
+			{{if .Description}}/*
+			{{.Description}}*/{{end}}
 			func (*{{$.Name}}) {{.Name}}({{range .Arg}}{{.Name}} {{.Type}},{{end}}){
 		}
 		{{end}}
 	
 		{{range $.Event}}
+			{{if .Description}}/*
+			{{.Description}}*/{{end}}
 				func (*{{$.Name}}) {{.Name}}({{range .Arg}}{{.Name}} {{.Type}},{{end}}){
 			}
 		{{end}}

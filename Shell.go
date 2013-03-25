@@ -1,6 +1,15 @@
 package gowl
 
-type Shell struct{}
+	
+	type Shell struct{}
 
-func (*Shell) GetShellSurface(id new_id, surface object) {
-}
+		
+
+		
+			
+			func (*Shell) GetShellSurface(id new_id,surface object,){
+		}
+		
+	
+		
+	
