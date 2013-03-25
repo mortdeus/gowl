@@ -26,8 +26,8 @@ const (
 	Xrgb8888 = 1
 )
 
-func (*Shm) CreatePool(Id new_id, Fd fd, Size int) {
+func (*Shm) CreatePool(id new_id, fd fd, size int) {
 }
 
-func (*Shm) Format(Format uint) {
+func (*Shm) Format(format uint) {
 }

@@ -11,16 +11,16 @@ package gowl
 
 type DataSource struct{}
 
-func (*DataSource) Offer(Type string) {
+func (*DataSource) Offer(type_ string) {
 }
 
 func (*DataSource) Destroy() {
 }
 
-func (*DataSource) Target(MimeType string) {
+func (*DataSource) Target(mimeType string) {
 }
 
-func (*DataSource) Send(MimeType string, Fd fd) {
+func (*DataSource) Send(mimeType string, fd fd) {
 }
 
 func (*DataSource) Cancelled() {

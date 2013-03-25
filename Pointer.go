@@ -24,20 +24,20 @@ const (
 	HorizontalScroll = 1
 )
 
-func (*Pointer) SetCursor(Serial uint, Surface object, HotspotX int, HotspotY int) {
+func (*Pointer) SetCursor(serial uint, surface object, hotspotX int, hotspotY int) {
 }
 
-func (*Pointer) Enter(Serial uint, Surface object, SurfaceX fixed, SurfaceY fixed) {
+func (*Pointer) Enter(serial uint, surface object, surfaceX fixed, surfaceY fixed) {
 }
 
-func (*Pointer) Leave(Serial uint, Surface object) {
+func (*Pointer) Leave(serial uint, surface object) {
 }
 
-func (*Pointer) Motion(Time uint, SurfaceX fixed, SurfaceY fixed) {
+func (*Pointer) Motion(time uint, surfaceX fixed, surfaceY fixed) {
 }
 
-func (*Pointer) Button(Serial uint, Time uint, Button uint, State uint) {
+func (*Pointer) Button(serial uint, time uint, button uint, state uint) {
 }
 
-func (*Pointer) Axis(Time uint, Axis uint, Value fixed) {
+func (*Pointer) Axis(time uint, axis uint, value fixed) {
 }

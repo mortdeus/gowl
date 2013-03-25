@@ -47,24 +47,10 @@ func generate() {
 }
 
 func fmtinator(typ interface{}, wg *sync.WaitGroup) {
-	f := func(s string) string {
-		if strings.HasPrefix(s, "wl_") {
-			s = s[3:]
-		}
-		if s == "class_" {
-			s = "class"
-		}
-		str := strings.Split(s, "_")
-		for i, in := range str {
-			str[i] = strings.ToUpper(string(in[0])) + in[1:]
-
-		}
-		return strings.Join(str, "")
-	}
 	wg.Add(1)
 	switch p := typ.(type) {
 	case *Interface:
-		p.Name = f(p.Name)
+		p.Name = stripAndCap(p.Name, false)
 		wg1 := new(sync.WaitGroup)
 		for i := range p.Event {
 			go fmtinator(&p.Event[i], wg1)
@@ -77,25 +63,50 @@ func fmtinator(typ interface{}, wg *sync.WaitGroup) {
 		}
 		wg1.Wait()
 	case *Event:
-		p.Name = f(p.Name)
+		p.Name = stripAndCap(p.Name, false)
 		for i := range p.Arg {
 			go fmtinator(&p.Arg[i], wg)
 		}
 	case *Request:
-		p.Name = f(p.Name)
+		p.Name = stripAndCap(p.Name, false)
 		for i := range p.Arg {
 			go fmtinator(&p.Arg[i], wg)
 		}
 	case *Enum:
-		p.Name = f(p.Name)
+		p.Name = stripAndCap(p.Name, false)
 		for i := range p.Entry {
 			go fmtinator(&p.Entry[i], wg)
 		}
 	case *Arg:
-		p.Name = f(p.Name)
+		p.Name = stripAndCap(p.Name, true)
 
 	case *Entry:
-		p.Name = f(p.Name)
+		p.Name = stripAndCap(p.Name, false)
 	}
 	wg.Done()
+}
+
+func stripAndCap(s string, mixedCase bool) string {
+	if strings.HasPrefix(s, "wl_") {
+		s = s[3:]
+	}
+	if s == "class_" {
+		s = "class"
+	}
+	str := strings.Split(s, "_")
+	for i, in := range str {
+		if mixedCase && i == 0 {
+			if in == "type" {
+				str[i] = "type_"
+			}
+			if in == "interface" {
+				str[i] = "interface_"
+			}
+			continue
+		}
+		str[i] = strings.ToUpper(string(in[0])) + in[1:]
+
+	}
+
+	return strings.Join(str, "")
 }

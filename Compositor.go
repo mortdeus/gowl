@@ -10,8 +10,8 @@ package gowl
 
 type Compositor struct{}
 
-func (*Compositor) CreateSurface(Id new_id) {
+func (*Compositor) CreateSurface(id new_id) {
 }
 
-func (*Compositor) CreateRegion(Id new_id) {
+func (*Compositor) CreateRegion(id new_id) {
 }

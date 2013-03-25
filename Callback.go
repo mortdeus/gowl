@@ -2,5 +2,5 @@ package gowl
 
 type Callback struct{}
 
-func (*Callback) Done(Serial uint) {
+func (*Callback) Done(serial uint) {
 }

@@ -11,8 +11,8 @@ type Region struct{}
 func (*Region) Destroy() {
 }
 
-func (*Region) Add(X int, Y int, Width int, Height int) {
+func (*Region) Add(x int, y int, width int, height int) {
 }
 
-func (*Region) Subtract(X int, Y int, Width int, Height int) {
+func (*Region) Subtract(x int, y int, width int, height int) {
 }

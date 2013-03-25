@@ -73,40 +73,40 @@ const (
 	Fill = 3
 )
 
-func (*ShellSurface) Pong(Serial uint) {
+func (*ShellSurface) Pong(serial uint) {
 }
 
-func (*ShellSurface) Move(Seat object, Serial uint) {
+func (*ShellSurface) Move(seat object, serial uint) {
 }
 
-func (*ShellSurface) Resize(Seat object, Serial uint, Edges uint) {
+func (*ShellSurface) Resize(seat object, serial uint, edges uint) {
 }
 
 func (*ShellSurface) SetToplevel() {
 }
 
-func (*ShellSurface) SetTransient(Parent object, X int, Y int, Flags uint) {
+func (*ShellSurface) SetTransient(parent object, x int, y int, flags uint) {
 }
 
-func (*ShellSurface) SetFullscreen(Method uint, Framerate uint, Output object) {
+func (*ShellSurface) SetFullscreen(method uint, framerate uint, output object) {
 }
 
-func (*ShellSurface) SetPopup(Seat object, Serial uint, Parent object, X int, Y int, Flags uint) {
+func (*ShellSurface) SetPopup(seat object, serial uint, parent object, x int, y int, flags uint) {
 }
 
-func (*ShellSurface) SetMaximized(Output object) {
+func (*ShellSurface) SetMaximized(output object) {
 }
 
-func (*ShellSurface) SetTitle(Title string) {
+func (*ShellSurface) SetTitle(title string) {
 }
 
-func (*ShellSurface) SetClass(Class string) {
+func (*ShellSurface) SetClass(class string) {
 }
 
-func (*ShellSurface) Ping(Serial uint) {
+func (*ShellSurface) Ping(serial uint) {
 }
 
-func (*ShellSurface) Configure(Edges uint, Width int, Height int) {
+func (*ShellSurface) Configure(edges uint, width int, height int) {
 }
 
 func (*ShellSurface) PopupDone() {

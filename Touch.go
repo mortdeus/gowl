@@ -7,13 +7,13 @@ package gowl
 
 type Touch struct{}
 
-func (*Touch) Down(Serial uint, Time uint, Surface object, Id int, X fixed, Y fixed) {
+func (*Touch) Down(serial uint, time uint, surface object, id int, x fixed, y fixed) {
 }
 
-func (*Touch) Up(Serial uint, Time uint, Id int) {
+func (*Touch) Up(serial uint, time uint, id int) {
 }
 
-func (*Touch) Motion(Time uint, Id int, X fixed, Y fixed) {
+func (*Touch) Motion(time uint, id int, x fixed, y fixed) {
 }
 
 func (*Touch) Frame() {

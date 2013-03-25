@@ -72,8 +72,8 @@ const (
 	Preferred = 0x2
 )
 
-func (*Output) Geometry(X int, Y int, PhysicalWidth int, PhysicalHeight int, Subpixel int, Make string, Model string, Transform int) {
+func (*Output) Geometry(x int, y int, physicalWidth int, physicalHeight int, subpixel int, make string, model string, transform int) {
 }
 
-func (*Output) Mode(Flags uint, Width int, Height int, Refresh int) {
+func (*Output) Mode(flags uint, width int, height int, refresh int) {
 }

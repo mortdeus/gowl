@@ -12,29 +12,29 @@ type Surface struct{}
 func (*Surface) Destroy() {
 }
 
-func (*Surface) Attach(Buffer object, X int, Y int) {
+func (*Surface) Attach(buffer object, x int, y int) {
 }
 
-func (*Surface) Damage(X int, Y int, Width int, Height int) {
+func (*Surface) Damage(x int, y int, width int, height int) {
 }
 
-func (*Surface) Frame(Callback new_id) {
+func (*Surface) Frame(callback new_id) {
 }
 
-func (*Surface) SetOpaqueRegion(Region object) {
+func (*Surface) SetOpaqueRegion(region object) {
 }
 
-func (*Surface) SetInputRegion(Region object) {
+func (*Surface) SetInputRegion(region object) {
 }
 
 func (*Surface) Commit() {
 }
 
-func (*Surface) SetBufferTransform(Transform int) {
+func (*Surface) SetBufferTransform(transform int) {
 }
 
-func (*Surface) Enter(Output object) {
+func (*Surface) Enter(output object) {
 }
 
-func (*Surface) Leave(Output object) {
+func (*Surface) Leave(output object) {
 }

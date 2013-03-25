@@ -13,14 +13,14 @@ package gowl
 
 type DataOffer struct{}
 
-func (*DataOffer) Accept(Serial uint, Type string) {
+func (*DataOffer) Accept(serial uint, type_ string) {
 }
 
-func (*DataOffer) Receive(MimeType string, Fd fd) {
+func (*DataOffer) Receive(mimeType string, fd fd) {
 }
 
 func (*DataOffer) Destroy() {
 }
 
-func (*DataOffer) Offer(Type string) {
+func (*DataOffer) Offer(type_ string) {
 }

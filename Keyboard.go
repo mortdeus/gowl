@@ -33,17 +33,17 @@ const (
 	Pressed = 1
 )
 
-func (*Keyboard) Keymap(Format uint, Fd fd, Size uint) {
+func (*Keyboard) Keymap(format uint, fd fd, size uint) {
 }
 
-func (*Keyboard) Enter(Serial uint, Surface object, Keys array) {
+func (*Keyboard) Enter(serial uint, surface object, keys array) {
 }
 
-func (*Keyboard) Leave(Serial uint, Surface object) {
+func (*Keyboard) Leave(serial uint, surface object) {
 }
 
-func (*Keyboard) Key(Serial uint, Time uint, Key uint, State uint) {
+func (*Keyboard) Key(serial uint, time uint, key uint, state uint) {
 }
 
-func (*Keyboard) Modifiers(Serial uint, ModsDepressed uint, ModsLatched uint, ModsLocked uint, Group uint) {
+func (*Keyboard) Modifiers(serial uint, modsDepressed uint, modsLatched uint, modsLocked uint, group uint) {
 }

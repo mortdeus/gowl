@@ -12,8 +12,8 @@ package gowl
 
 type DataDeviceManager struct{}
 
-func (*DataDeviceManager) CreateDataSource(Id new_id) {
+func (*DataDeviceManager) CreateDataSource(id new_id) {
 }
 
-func (*DataDeviceManager) GetDataDevice(Id new_id, Seat object) {
+func (*DataDeviceManager) GetDataDevice(id new_id, seat object) {
 }

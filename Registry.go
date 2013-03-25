@@ -26,11 +26,11 @@ package gowl
 
 type Registry struct{}
 
-func (*Registry) Bind(Name uint, Id new_id) {
+func (*Registry) Bind(name uint, id new_id) {
 }
 
-func (*Registry) Global(Name uint, Interface string, Version uint) {
+func (*Registry) Global(name uint, interface_ string, version uint) {
 }
 
-func (*Registry) GlobalRemove(Name uint) {
+func (*Registry) GlobalRemove(name uint) {
 }

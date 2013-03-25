@@ -27,14 +27,14 @@ const (
 	Touch = 4
 )
 
-func (*Seat) GetPointer(Id new_id) {
+func (*Seat) GetPointer(id new_id) {
 }
 
-func (*Seat) GetKeyboard(Id new_id) {
+func (*Seat) GetKeyboard(id new_id) {
 }
 
-func (*Seat) GetTouch(Id new_id) {
+func (*Seat) GetTouch(id new_id) {
 }
 
-func (*Seat) Capabilities(Capabilities uint) {
+func (*Seat) Capabilities(capabilities uint) {
 }

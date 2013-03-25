@@ -25,14 +25,14 @@ const (
 	NoMemory = 2
 )
 
-func (*Display) Sync(Callback new_id) {
+func (*Display) Sync(callback new_id) {
 }
 
-func (*Display) GetRegistry(Callback new_id) {
+func (*Display) GetRegistry(callback new_id) {
 }
 
-func (*Display) Error(ObjectId object, Code uint, Message string) {
+func (*Display) Error(objectId object, code uint, message string) {
 }
 
-func (*Display) DeleteId(Id uint) {
+func (*Display) DeleteId(id uint) {
 }

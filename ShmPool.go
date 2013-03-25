@@ -14,11 +14,11 @@ package gowl
 
 type ShmPool struct{}
 
-func (*ShmPool) CreateBuffer(Id new_id, Offset int, Width int, Height int, Stride int, Format uint) {
+func (*ShmPool) CreateBuffer(id new_id, offset int, width int, height int, stride int, format uint) {
 }
 
 func (*ShmPool) Destroy() {
 }
 
-func (*ShmPool) Resize(Size int) {
+func (*ShmPool) Resize(size int) {
 }
