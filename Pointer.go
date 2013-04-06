@@ -1,33 +1,25 @@
 package gowl
 
-	
-	type Pointer struct{}
+type Pointer struct{}
 
-		
-			/*
-			
+/*
+
         Describes the physical state of a button which provoked the button
 	event.
-      */
-			
-			const(
-				ButtonState_Released = 0
-				ButtonState_Pressed = 1
-				
-			)
-		
-			
-			
-			const(
-				Axis_VerticalScroll = 0
-				Axis_HorizontalScroll = 1
-				
-			)
-		
+*/
 
-		
-			/*
-			
+const (
+	ButtonState_Released = 0
+	ButtonState_Pressed  = 1
+)
+
+const (
+	Axis_VerticalScroll   = 0
+	Axis_HorizontalScroll = 1
+)
+
+/*
+
 	Set the pointer surface, i.e., the surface that contains the
 	pointer image (cursor). This request only takes effect if the pointer
 	focus for this device is one of the requesting client's surfaces
@@ -54,46 +46,44 @@ package gowl
 	wl_surface is no longer used as the cursor. When the use as a
 	cursor ends, the current and pending input regions become
 	undefined, and the wl_surface is unmapped.
-      */
-			func (*Pointer) SetCursor(serial uint,surface object,hotspotX int,hotspotY int,){
-		}
-		
-	
-		
-			/*
-			
+*/
+func (*Pointer) SetCursor(serial uint32, surface Object, hotspotX int32, hotspotY int32) {
+}
+
+/*
+
 	Notification that this seat's pointer is focused on a certain
 	surface. When an seat's focus enters a surface, the pointer image
 	is undefined and a client should respond to this event by setting
 	an appropriate pointer image.
-      */
-				func (*Pointer) Enter(serial uint,surface object,surfaceX fixed,surfaceY fixed,){
-			}
-		
-			/*
-			
-      */
-				func (*Pointer) Leave(serial uint,surface object,){
-			}
-		
-			/*
-			
+*/
+func (*Pointer) Enter(serial uint32, surface Object, surfaceX Fixed, surfaceY Fixed) {
+}
+
+/*
+
+*/
+func (*Pointer) Leave(serial uint32, surface Object) {
+}
+
+/*
+
 	Notification of pointer location change. The arguments surface_[xy]
 	are the location relative to the focused surface.
-      */
-				func (*Pointer) Motion(time uint,surfaceX fixed,surfaceY fixed,){
-			}
-		
-			/*
-			
+*/
+func (*Pointer) Motion(time uint32, surfaceX Fixed, surfaceY Fixed) {
+}
+
+/*
+
 	Mouse button click and release notifications.  The location
 	of the click is given by the last motion or pointer_focus event.
-      */
-				func (*Pointer) Button(serial uint,time uint,button uint,state uint,){
-			}
-		
-			/*
-			
+*/
+func (*Pointer) Button(serial uint32, time uint32, button uint32, state uint32) {
+}
+
+/*
+
 	Scroll and other axis notifications.
 
 	For scroll events (vertical and horizontal scroll axes), the
@@ -110,8 +100,6 @@ package gowl
 
 	When applicable, clients can transform its view relative to the
 	scroll distance.
-      */
-				func (*Pointer) Axis(time uint,axis uint,value fixed,){
-			}
-		
-	
+*/
+func (*Pointer) Axis(time uint32, axis uint32, value Fixed) {
+}

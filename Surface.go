@@ -1,25 +1,22 @@
 package gowl
 
-	/*
-	
-      A surface.  This is an image that is displayed on the screen.
-      It has a location, size and pixel contents.
-    
-	*/
-	type Surface struct{}
+/*
 
-		
+   A surface.  This is an image that is displayed on the screen.
+   It has a location, size and pixel contents.
 
-		
-			/*
-			
+*/
+type Surface struct{}
+
+/*
+
 	Deletes the surface and invalidates its object id.
-      */
-			func (*Surface) Destroy(){
-		}
-		
-			/*
-			
+*/
+func (*Surface) Destroy() {
+}
+
+/*
+
 	Set the contents of a buffer into this surface. The x and y
 	arguments specify the location of the new pending buffer's upper
 	left corner, relative to the current buffer's upper left corner. In
@@ -53,12 +50,12 @@ package gowl
 
 	Only if wl_surface.attach is sent with a nil wl_buffer, the
 	following wl_surface.commit will remove the surface content.
-      */
-			func (*Surface) Attach(buffer object,x int,y int,){
-		}
-		
-			/*
-			
+*/
+func (*Surface) Attach(buffer Object, x int32, y int32) {
+}
+
+/*
+
 	This request is used to describe the regions where the pending
 	buffer (or if pending buffer is none, the current buffer as updated
 	in-place) on the next wl_surface.commit will be different from the
@@ -74,12 +71,12 @@ package gowl
 	wl_surface.commit assigns pending damage as the current damage, and
 	clears pending damage. The server will clear the current damage as
 	it repaints the surface.
-      */
-			func (*Surface) Damage(x int,y int,width int,height int,){
-		}
-		
-			/*
-			
+*/
+func (*Surface) Damage(x int32, y int32, width int32, height int32) {
+}
+
+/*
+
 	Request notification when the next frame is displayed. Useful
 	for throttling redrawing operations, and driving animations.
 	The frame request will take effect on the next wl_surface.commit.
@@ -94,12 +91,12 @@ package gowl
 	damage, or any other state changes. wl_surface.commit triggers a
 	display update, so the callback event will arrive after the next
 	output refresh where the surface is visible.
-      */
-			func (*Surface) Frame(callback new_id,){
-		}
-		
-			/*
-			
+*/
+func (*Surface) Frame(callback NewId) {
+}
+
+/*
+
 	This request sets the region of the surface that contains
 	opaque content.  The opaque region is an optimization hint for
 	the compositor that lets it optimize out redrawing of content
@@ -119,12 +116,12 @@ package gowl
 	opaque region has copy semantics, and the wl_region object can be
 	destroyed immediately. A nil wl_region causes the pending opaque
 	region to be set to empty.
-      */
-			func (*Surface) SetOpaqueRegion(region object,){
-		}
-		
-			/*
-			
+*/
+func (*Surface) SetOpaqueRegion(region Object) {
+}
+
+/*
+
 	This request sets the region of the surface that can receive
 	pointer and touch events. Input events happening outside of
 	this region will try the next surface in the server surface
@@ -143,12 +140,12 @@ package gowl
 	surface will accept input. Setting the pending input region has copy
 	semantics, and the wl_region object can be destroyed immediately. A
 	nil wl_region causes the input region to be set to infinite.
-      */
-			func (*Surface) SetInputRegion(region object,){
-		}
-		
-			/*
-			
+*/
+func (*Surface) SetInputRegion(region Object) {
+}
+
+/*
+
 	Surface state (input, opaque, and damage regions, attached buffers,
 	etc.) is double-buffered. Protocol requests modify the pending
 	state, as opposed to current state in use by the compositor. Commit
@@ -166,12 +163,12 @@ package gowl
 	to affect double-buffered state.
 
 	Other interfaces may add further double-buffered surface state.
-      */
-			func (*Surface) Commit(){
-		}
-		
-			/*
-			
+*/
+func (*Surface) Commit() {
+}
+
+/*
+
 	This request sets an optional transformation on how the compositor
 	interprets the contents of the buffer attached to the surface. The
 	accepted values for the transform parameter are the values for
@@ -192,28 +189,24 @@ package gowl
 	Note that if the transform value includes 90 or 270 degree rotation,
 	the width of the buffer will become the surface height and the height
 	of the buffer will become the surface width.
-      */
-			func (*Surface) SetBufferTransform(transform int,){
-		}
-		
-	
-		
-			/*
-			
-        This is emitted whenever a surface's creation, movement, or resizing
-        results in some part of it being within the scanout region of an
-        output.
-      */
-				func (*Surface) Enter(output object,){
-			}
-		
-			/*
-			
-        This is emitted whenever a surface's creation, movement, or resizing
-        results in it no longer having any part of it within the scanout region
-        of an output.
-      */
-				func (*Surface) Leave(output object,){
-			}
-		
-	
+*/
+func (*Surface) SetBufferTransform(transform int32) {
+}
+
+/*
+
+   This is emitted whenever a surface's creation, movement, or resizing
+   results in some part of it being within the scanout region of an
+   output.
+*/
+func (*Surface) Enter(output Object) {
+}
+
+/*
+
+   This is emitted whenever a surface's creation, movement, or resizing
+   results in it no longer having any part of it within the scanout region
+   of an output.
+*/
+func (*Surface) Leave(output Object) {
+}

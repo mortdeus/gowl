@@ -3,8 +3,11 @@ package main
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
 	"io"
+	"log"
 	"os"
+	"os/exec"
 	"strings"
 	"sync"
 	"text/template"
@@ -43,6 +46,12 @@ func generate() {
 		}
 
 	}
+	if _, err := exec.Command("go", "fmt", "..").Output(); err != nil {
+		log.Fatal(err.(*exec.ExitError).Error())
+	}
+	if err := exec.Command("go", "install", "..").Run(); err != nil {
+		log.Fatal(fmt.Sprintf("%s:  %s\n", err.(*exec.ExitError).Error(), "Compilation failure."))
+	}
 
 }
 
@@ -79,6 +88,7 @@ func fmtinator(typ interface{}, wg *sync.WaitGroup) {
 		}
 	case *Arg:
 		p.Name = stripAndCap(p.Name, true)
+		p.Type = stripAndCap(p.Type, false)
 
 	case *Entry:
 		p.Name = stripAndCap(p.Name, false)
@@ -92,6 +102,12 @@ func stripAndCap(s string, mixedCase bool) string {
 	}
 	if s == "class_" {
 		s = "class"
+	}
+	if s == "uint" || s == "int" {
+		return string(s[:] + "32")
+	}
+	if s == "string" {
+		return s
 	}
 	str := strings.Split(s, "_")
 	for i, in := range str {

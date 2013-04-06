@@ -1,15 +1,6 @@
 package gowl
 
-	
-	type Callback struct{}
+type Callback struct{}
 
-		
-
-		
-	
-		
-			
-				func (*Callback) Done(serial uint,){
-			}
-		
-	
+func (*Callback) Done(serial uint32) {
+}
