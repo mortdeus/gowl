@@ -1,6 +1,7 @@
 package gowl
 
 import "unsafe"
+
 type message struct {
 	name      string
 	signature string
@@ -78,8 +79,8 @@ func FixedFromF64(d float64) Fixed {
 }
 
 func FixedToInt(f Fixed) int32 {
-	return int32(f / 256)
+	return int32(f) / 256
 }
-func FixedFromInt(i int) Fixed {
-	return Fixed(i * 256)
+func FixedFromInt(i int32) Fixed {
+	return Fixed(i) * 256
 }
