@@ -1,6 +1,9 @@
 package server
 
-import "unsafe"
+import (
+	"container/list"
+	"unsafe"
+)
 
 type Message struct {
 	name      string
@@ -19,6 +22,9 @@ type Object struct {
 	iface          *Interface
 	implementation interface{}
 	id             uint
+}
+type List struct {
+	list.List
 }
 type Fixed int32
 
