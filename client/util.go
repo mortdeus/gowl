@@ -1,25 +1,25 @@
-package server
+package client
 
 import (
 	"container/list"
 	"unsafe"
 )
 
-type Message struct {
+type message struct {
 	name      string
 	signature string
-	types     []Interface
+	types     []*iface
 }
 
-type Interface struct {
+type iface struct {
 	name    string
 	version int
-	methods []Message
-	events  []Message
+	methods []message
+	events  []message
 }
 
-type Object struct {
-	iface          *Interface
+type object struct {
+	iface          *iface
 	implementation interface{}
 	id             uint
 }
