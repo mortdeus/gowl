@@ -1,7 +1,5 @@
 package client
 
-type Output struct{}
+type Output struct{ object }
 
 func (o *Output) Marshal() {}
-
-

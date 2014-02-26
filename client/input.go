@@ -1,17 +1,9 @@
 package client
 
-type Seat struct{}
+type Seat struct{ object }
 
-func (s *Seat) Marshal() {}
+type Pointer struct{ object }
 
-type Pointer struct{}
+type Keyboard struct{ object }
 
-func (p *Pointer) Marshal() {}
-
-type Keyboard struct{}
-
-func (k *Keyboard) Marshal() {}
-
-type Touch struct{}
-
-func (t *Touch) Marshal() {}
+type Touch struct{ object }

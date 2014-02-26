@@ -5,30 +5,63 @@ import (
 	"sync"
 )
 
-type Display struct {
+type Display interface {
+	sync.Locker
+	Connect()
+	ConnectToFd(os.File)
+	Disconnect()
+	Fd() uintptr
+	Flush() int
+	Roundtrip() int
+}
+type display struct {
 	sync.Mutex
+	p      Proxy
+	events []EventQueue
 }
 
-func (d *Display) Marshal()                      {}
-func (d *Display) Connect(name string)           {}
-func (d *Display) ConnectToFile(f os.File) error { return nil }
+func (d *display) Connect(name string) {}
+func (d *display) ConnectToFd(fd uint) {}
+func (d *display) Disconnect()         {}
+func (d *display) Fd() uint            {}
+func (d *display) Roundtrip() int      { return -1 }
+func (d *display) Flush() int          { return -1 }
 
-func (d *Display) Disconnect() {}
+func (d *display) Read(cancel chan bool) error        { return nil }
+func (d *display) prepareRead() error                 { return nil }
+func (d *display) prepareReadQueue(q *EventQueue) int { return -1 }
+func (d *display) cancelRead() error                  { return nil }
 
-func (d *Display) Getfd() {}
+type bitmask uint
 
-func (d *Display) Roundtrip() int { return -1 }
+const Pending bitmask = 1 << 30
 
-func (d *Display) ReadEvents() error                  { return nil }
-func (d *Display) PrepareRead() error                 { return nil }
-func (d *Display) PrepareReadQueue(q *EventQueue) int { return -1 }
-func (d *Display) CancelRead() error                  { return nil }
+/*
+When the Queue bit is set, bits 0-29 are interpreted as
+a uint30 index into display.events slice of EventQueues; This allows developers to
+execute dispatch using an alternative EventsQueue than Display's main EventsQueue.
+*/
+const Queue bitmask = 1 << 31
 
-func (d *Display) CreateQueue() *EventQueue  { return nil }
-func (d *Display) DispatchQueue() int        { return -1 }
-func (d *Display) DispatchQueuePending() int { return -1 }
+/*
+display.Dispatch's mask has reserved bits 30 and 31 for
+overriding Dispatch's default functionality. This allows us to simplify wayland's API
+from...
 
-func (d *Display) Dispatch() int        { return -1 }
-func (d *Display) DispatchPending() int { return -1 }
+wl_display_dispatch
+wl_display_dispatch_queue,
+wl_display_dispatch_queue_pending,
+wl_display_dispatch_pending
 
-func (d *Display) Flush() int { return -1 }
+to a single Dispatch method that satisifies the Dispatcher interface.
+*/
+func (d *display) Dispatch(mode bitmask) int {
+	var q DataDevice
+
+	if mode&Queue > 0 {
+		q = d.events[mask&(0x3ffffff)]
+	}
+	if mode&Pending > 0 {
+	}
+
+}

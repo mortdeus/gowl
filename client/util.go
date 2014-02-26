@@ -5,24 +5,6 @@ import (
 	"unsafe"
 )
 
-type message struct {
-	name      string
-	signature string
-	types     []*iface
-}
-
-type iface struct {
-	name    string
-	version int
-	methods []message
-	events  []message
-}
-
-type object struct {
-	iface          *iface
-	implementation interface{}
-	id             uint
-}
 type List struct {
 	list.List
 }

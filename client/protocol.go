@@ -1,16 +1,29 @@
 package client
 
-var display = iface{
+type message struct {
+	name      string
+	signature string
+	types     []meta
+}
+
+type meta struct {
+	name    string
+	version int
+	methods []message
+	events  []message
+}
+
+var displayMeta = meta{
 	name: "wl_display", version: 1,
 	methods: []message{
-		{"sync", "n", []*iface{&callback}},
-		{"get_registry", "n", []*iface{&registry}},
+		{"sync", "n", []meta{callbackMeta}},
+		{"get_registry", "n", []meta{registryMeta}},
 	},
 	events: []message{
 		{"error", "ous", nil},
 		{"delete_id", "u", nil}},
 }
-var registry = iface{
+var registryMeta = meta{
 	name: "wl_registry", version: 1,
 	methods: []message{
 		{"bind", "usun", nil}},
@@ -18,36 +31,36 @@ var registry = iface{
 		{"global", "usu", nil},
 		{"global_remove", "u", nil}},
 }
-var callback = iface{
+var callbackMeta = meta{
 	name: "wl_callback", version: 1,
 	methods: nil,
 	events: []message{
 		{"done", "u", nil}},
 }
-var shmPool = iface{
+var shmPoolMeta = meta{
 	name: "wl_shm_pool", version: 1,
 	methods: []message{
-		{"create_buffer", "niiiiu", []*iface{&buffer, nil, nil, nil, nil, nil}},
+		{"create_buffer", "niiiiu", []meta{bufferMeta, nil, nil, nil, nil, nil}},
 		{"destroy", "", nil},
 		{"resize", "i", nil}},
 	events: nil,
 }
-var shm = iface{
+var shmMeta = meta{
 	name: "wl_shm", version: 1,
 	methods: []message{
-		{"create_pool", "nhi", []*iface{&shmPool, nil, nil}}},
+		{"create_pool", "nhi", []meta{shmPoolMeta, nil, nil}}},
 	events: []message{
 		{"format", "u", nil}},
 }
 
-var buffer = iface{
+var bufferMeta = meta{
 	name: "wl_buffer", version: 1,
 	methods: []message{
 		{"destroy", "", nil}},
 	events: []message{
 		{"release", "", nil}},
 }
-var output = iface{
+var outputMeta = meta{
 	name: "wl_output", version: 2,
 	methods: nil,
 	events: []message{
@@ -57,7 +70,7 @@ var output = iface{
 		{"scale", "2i", nil}},
 }
 
-var dataOffer = iface{
+var dataOfferMeta = meta{
 	name: "wl_data_offer", version: 1,
 	methods: []message{
 		{"accept", "u?s", nil},
@@ -67,7 +80,7 @@ var dataOffer = iface{
 		{"offer", "s", nil}},
 }
 
-var dataSource = iface{
+var dataSourceMeta = meta{
 	name: "wl_data_source", version: 1,
 	methods: []message{
 		{"offer", "s", nil},
@@ -78,45 +91,45 @@ var dataSource = iface{
 		{"cancelled", "", nil}},
 }
 
-var dataDevice = iface{
+var dataDeviceMeta = meta{
 	name: "wl_data_device", version: 1,
 	methods: []message{
-		{"start_drag", "?oo?ou", []*iface{&dataSource, &surface, &surface, nil}},
-		{"set_selection", "?ou", []*iface{&dataSource, nil}}},
+		{"start_drag", "?oo?ou", []meta{dataSourceMeta, surfaceMeta, surfaceMeta, nil}},
+		{"set_selection", "?ou", []meta{dataSourceMeta, nil}}},
 	events: []message{
-		{"data_offer", "n", []*iface{&dataOffer}},
-		{"enter", "uoff?o", []*iface{nil, &surface, nil, nil, &dataOffer}},
+		{"data_offer", "n", []meta{dataOfferMeta}},
+		{"enter", "uoff?o", []meta{nil, surfaceMeta, nil, nil, dataOfferMeta}},
 		{"leave", "", nil},
 		{"motion", "uff", nil},
 		{"drop", "", nil},
-		{"selection", "?o", []*iface{&dataOffer}},
+		{"selection", "?o", []meta{dataOfferMeta}},
 	},
 }
-var dataDeviceManager = iface{
+var dataDeviceManagerMeta = meta{
 	name: "wl_data_device_manager", version: 1,
 	methods: []message{
-		{"create_data_source", "n", []*iface{&dataOffer}},
-		{"get_data_device", "no", []*iface{&dataDevice, &seat}}},
+		{"create_data_source", "n", []meta{dataOfferMeta}},
+		{"get_data_device", "no", []meta{dataDeviceMeta, seatMeta}}},
 	events: nil,
 }
-var shell = iface{
+var shellMeta = meta{
 	name: "wl_shell", version: 1,
 	methods: []message{
-		{"get_shell_surface", "no", []*iface{&shellSurface, &surface}}},
+		{"get_shell_surface", "no", []meta{shellSurfaceMeta, surfaceMeta}}},
 	events: nil,
 }
 
-var shellSurface = iface{
+var shellSurfaceMeta = meta{
 	name: "wl_shell_surface", version: 1,
 	methods: []message{
 		{"pong", "u", nil},
-		{"move", "ou", []*iface{&seat, nil}},
-		{"resize", "ouu", []*iface{&seat, nil, nil}},
+		{"move", "ou", []meta{seatMeta, nil}},
+		{"resize", "ouu", []meta{seatMeta, nil, nil}},
 		{"set_toplevel", "", nil},
-		{"set_transient", "oiiu", []*iface{&surface, nil, nil, nil}},
-		{"set_fullscreen", "uu?o", []*iface{nil, nil, &output}},
-		{"set_popup", "ouoiiu", []*iface{&seat, nil, &surface, nil, nil, nil}},
-		{"set_maximized", "?o", []*iface{&output}},
+		{"set_transient", "oiiu", []meta{surfaceMeta, nil, nil, nil}},
+		{"set_fullscreen", "uu?o", []meta{nil, nil, outputMeta}},
+		{"set_popup", "ouoiiu", []meta{seatMeta, nil, surfaceMeta, nil, nil, nil}},
+		{"set_maximized", "?o", []meta{outputMeta}},
 		{"set_title", "s", nil},
 		{"set_class", "s", nil},
 	},
@@ -125,15 +138,15 @@ var shellSurface = iface{
 		{"configure", "uii", nil},
 		{"popup_done", "", nil}},
 }
-var compositor = iface{
+var compositorMeta = meta{
 	name: "wl_compositor", version: 3,
 	methods: []message{
-		{"create_surface", "n", []*iface{&surface}},
-		{"create_region", "n", []*iface{&region}}},
+		{"create_surface", "n", []meta{surfaceMeta}},
+		{"create_region", "n", []meta{regionMeta}}},
 	events: nil,
 }
 
-var region = iface{
+var regionMeta = meta{
 	name: "wl_region", version: 1,
 	methods: []message{
 		{"destroy", "", nil},
@@ -142,80 +155,80 @@ var region = iface{
 	events: nil,
 }
 
-var surface = iface{
+var surfaceMeta = meta{
 	name: "wl_surface", version: 3,
 	methods: []message{
 		{"destroy", "", nil},
-		{"attach", "?oii", []*iface{&buffer, nil, nil}},
+		{"attach", "?oii", []meta{bufferMeta, nil, nil}},
 		{"damage", "iiii", nil},
-		{"frame", "n", []*iface{&callback}},
-		{"set_opaque_region", "?o", []*iface{&region}},
-		{"set_input_region", "?o", []*iface{&region}},
+		{"frame", "n", []meta{callbackMeta}},
+		{"set_opaque_region", "?o", []meta{regionMeta}},
+		{"set_input_region", "?o", []meta{regionMeta}},
 		{"commit", "", nil},
 		{"set_buffer_transform", "2i", nil},
 		{"set_buffer_scale", "3i", nil}},
 	events: []message{
-		{"enter", "o", []*iface{&output}},
-		{"leave", "o", []*iface{&output}}},
+		{"enter", "o", []meta{outputMeta}},
+		{"leave", "o", []meta{outputMeta}}},
 }
-var seat = iface{
+var seatMeta = meta{
 	name: "wl_seat", version: 3,
 	methods: []message{
-		{"get_pointer", "n", []*iface{&pointer}},
-		{"get_keyboard", "n", []*iface{&keyboard}},
-		{"get_touch", "n", []*iface{&touch}}},
+		{"get_pointer", "n", []meta{pointerMeta}},
+		{"get_keyboard", "n", []meta{keyboardMeta}},
+		{"get_touch", "n", []meta{touchMeta}}},
 	events: []message{
 		{"capabilities", "u", nil},
 		{"name", "2s", nil}},
 }
-var pointer = iface{
+var pointerMeta = meta{
 	name: "wl_pointer", version: 3,
 	methods: []message{
-		{"set_cursor", "u?oii", []*iface{nil, &surface, nil, nil}},
+		{"set_cursor", "u?oii", []meta{nil, surfaceMeta, nil, nil}},
 		{"release", "3", nil}},
 	events: []message{
-		{"enter", "3uoff", []*iface{nil, &surface, nil, nil}},
-		{"leave", "3uo", []*iface{nil, &surface}},
+		{"enter", "3uoff", []meta{nil, surfaceMeta, nil, nil}},
+		{"leave", "3uo", []meta{nil, surfaceMeta}},
 		{"motion", "3uff", nil},
 		{"button", "3uuuu", nil},
 		{"axis", "3uuf", nil}},
 }
-var keyboard = iface{
+var keyboardMeta = meta{
 	name: "wl_keyboard", version: 3,
 	methods: []message{
 		{"release", "3", nil}},
 	events: []message{
 		{"keymap", "3uhu", nil},
-		{"enter", "3uoa", []*iface{nil, &surface, nil}},
-		{"leave", "3uo", []*iface{nil, &surface}},
+		{"enter", "3uoa", []meta{nil, surfaceMeta, nil}},
+		{"leave", "3uo", []meta{nil, surfaceMeta}},
 		{"key", "3uuuu", nil},
 		{"modifiers", "3uuuuu", nil}},
 }
-var touch = iface{
+var touchMeta = meta{
 	name: "wl_touch", version: 3,
 	methods: []message{
 		{"release", "3", nil}},
 	events: []message{
-		{"down", "3uuoiff", []*iface{nil, nil, &surface, nil, nil, nil}},
+		{"down", "3uuoiff", []meta{nil, nil, surfaceMeta, nil, nil, nil}},
 		{"up", "3uui", nil},
 		{"motion", "3uiff", nil},
 		{"frame", "3", nil},
 		{"cancel", "3", nil}},
 }
-var subcompositor = iface{
+var subcompositorMeta = meta{
 	name: "wl_subcompositor", version: 1,
 	methods: []message{
 		{"destroy", "", nil},
-		{"get_subsurface", "noo", []*iface{&subsurface, &surface, &surface}}},
+		{"get_subsurface", "noo", []meta{subsurfaceMeta, surfaceMeta, surfaceMeta}}},
 	events: nil,
 }
-var subsurface = iface{
+var subsurfaceMeta = meta{
 	name: "wl_subsurface", version: 1,
 	methods: []message{
 		{"destroy", "", nil},
 		{"set_position", "ii", nil},
-		{"place_above", "o", []*iface{&surface}},
-		{"place_below", "o", []*iface{&surface}},
+		{"place_above", "o", []meta{surfaceMeta}},
+		{"place_below", "o", []meta{surfaceMeta}},
 		{"set_sync", "", nil},
 		{"set_desync", "", nil}},
 	events: nil,

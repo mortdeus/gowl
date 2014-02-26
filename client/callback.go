@@ -1,6 +1,7 @@
 package client
 
-type Callback struct{}
-
+type Callback struct {
+	object
+}
 
 func (c *Callback) Marshal() {}

@@ -1,17 +1,9 @@
 package client
 
-type DataOffer struct{}
+type DataOffer struct{ object }
 
-func (d *DataOffer) Marshal() {}
+type DataSource struct{ object }
 
-type DataSource struct{}
+type DataDevice struct{ object }
 
-func (d *DataSource) Marshal() {}
-
-type DataDevice struct{}
-
-func (d *DataDevice) Marshal() {}
-
-type DataDeviceManager struct{}
-
-func (d *DataDeviceManager) Marshal() {}
+type DataDeviceManager struct{ object }

@@ -1,5 +1,7 @@
 package client
 
-type Buffer struct{}
+type Buffer struct {
+	object
+}
 
 func (b *Buffer) Marshal() {}
