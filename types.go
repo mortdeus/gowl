@@ -22,11 +22,8 @@ func StringEncode(s string) (String, error) {
 	if err := binary.Write(buf, binary.LittleEndian, uint32(len(b))); err != nil {
 		return nil, err
 	}
-	pad := len(b) % 4
-	for (pad+len(b))%4 > 0 {
-		pad++
-	}
-
+	pad := (4 - (len(b) % 4)) &^ 04
+	
 	if _, err := buf.Write(append(b, make([]byte, pad)...)); err != nil {
 		return nil, err
 	}
