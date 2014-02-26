@@ -5,9 +5,15 @@ import (
 	"strings"
 )
 
-type Display struct{}
+type Display interface {
+	
+}
 
-func (d *Display) Create()  {}
+type display struct{}
+
+func (d *Display) Create()  {
+	strings.
+}
 func (d *Display) Destroy() {}
 
 func (d *Display) GetEventLoop() {}
