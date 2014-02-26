@@ -1,16 +1,4 @@
-Gowl (Go-bindings for wayland)
+Gowl
 ======
-This library is ONLY for communicating with the wayland protocol. If you want to
-actually create windows and similar, you'll need to write the code to do that
-yourself.
 
-If you want to generate the files yourself, run:
-
-	cd generator/
-	go run generate.go
-
-generate.go places the generated files in the directory above the current.
-
-To run the test application, start weston and run:
-
-	go run test/main.go
+A Wayland display server implementation in pure Go. 
