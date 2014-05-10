@@ -1,9 +1,9 @@
 package client
 
-type Seat struct{ object }
+type Seat struct{}
 
-type Pointer struct{ object }
+type Pointer struct{}
 
-type Keyboard struct{ object }
+type Keyboard struct{}
 
-type Touch struct{ object }
+type Touch struct{}

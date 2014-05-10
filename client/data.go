@@ -1,9 +1,9 @@
 package client
 
-type DataOffer struct{ object }
+type DataOffer struct{}
 
-type DataSource struct{ object }
+type DataSource struct{}
 
-type DataDevice struct{ object }
+type DataDevice struct{}
 
-type DataDeviceManager struct{ object }
+type DataDeviceManager struct{}

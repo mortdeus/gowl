@@ -7,6 +7,4 @@ func (s *Shm) Marshal() {}
 
 type ShmPool struct{}
 
-
-
 func (s *ShmPool) Marshal() {}
