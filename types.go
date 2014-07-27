@@ -7,10 +7,16 @@ import (
 	"unsafe"
 )
 
-type Int int32
-type Uint uint32
-
-type String []byte
+type (
+	Int    int32
+	Uint   uint32
+	Fixed  int32
+	String []byte
+	Object uint32
+	NewID  uint32
+	Array  []byte
+	FD     uintptr
+)
 
 func StringEncode(s string) (String, error) {
 	b, err := syscall.ByteSliceFromString(s)
@@ -23,7 +29,7 @@ func StringEncode(s string) (String, error) {
 		return nil, err
 	}
 	pad := (4 - (len(b) % 4)) &^ 04
-	
+
 	if _, err := buf.Write(append(b, make([]byte, pad)...)); err != nil {
 		return nil, err
 	}
@@ -38,8 +44,6 @@ func StringDecode(s String) (string, error) {
 	}
 	return string(s[4 : (slen+4)-1]), nil
 }
-
-type Fixed int32
 
 func FixedToF64(f Fixed) float64 {
 	d := int64(1023+44)<<52 + (1 << 51) + int64(f)
