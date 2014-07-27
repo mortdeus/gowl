@@ -1,7 +1,9 @@
-package client
+package server
+
+import "github.com/mortdeus/gowl"
 
 type Callback struct {
-	object
+	gowl.Object
 }
 
 func (c *Callback) Marshal() {}

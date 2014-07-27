@@ -2,7 +2,7 @@ package server
 
 import (
 	"container/list"
-	"unsafe"
+	//"unsafe"
 )
 
 type Message struct {
@@ -26,4 +26,3 @@ type Object struct {
 type List struct {
 	list.List
 }
-

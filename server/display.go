@@ -1,26 +1,43 @@
 package server
 
 import (
+	"net"
 	"os"
-	"strings"
+	"runtime"
+	//"strings"
+	//"github.com/mortdeus/gowl"
 )
 
-type Display interface {
-	
+type Display struct {
+	net.Listener
+	id, serial uint
 }
 
-type display struct{}
+func NewDisplay() (*Display, error) {
+	d := new(Display)
+	d.id = 1
+	v := os.Getenv("GOWL_DISPLAY")
+	if v == "" {
+		v = runtime.GOROOT() + "/gowl.sock"
+	}
+	if l, err := net.Listen("unix", v); err != nil {
+		return nil, err
+	} else {
+		d.Listener = l
 
-func (d *Display) Create()  {
-	strings.
+	}
+	return d, nil
+
 }
-func (d *Display) Destroy() {}
+func (d *Display) Destroy() error {
+	if err := d.Listener.Close(); err != nil {
+		return err
+	}
+	return nil
+}
 
 func (d *Display) GetEventLoop() {}
 
-func (d *Display) AddSocket(s string) {
-
-}
 func (d *Display) Terminate() {
 
 }
@@ -31,16 +48,18 @@ func (d *Display) FlushClients() {
 
 }
 func (d *Display) GetSerial() uint {
-
+	return d.serial
 }
 func (d *Display) NextSerial() uint {
+	d.serial++
+	return d.serial
 
 }
-func (d *Display) AddDestroyListner(l *Listner) {
+func (d *Display) AddDestroyListener(l *Listener) {
 
 }
-func (d *Display) GetDestroyListner(n NotifyFunc) {
+func (d *Display) GetDestroyListener(notify func()) {
 
 }
 func (d *Display) AddShmFormat(fmt uint)           {}
-func (d *Display) GetAdditionalShmFormats() []uint {}
+func (d *Display) GetAdditionalShmFormats() []uint { return nil }
