@@ -2,13 +2,13 @@ package gowl
 
 import (
 	"bytes"
-	"encoding/binary"
+	"encoding/gob"
+	"fmt"
 	"testing"
 )
 
 var lorem = []string{
 	"Lorem",
-
 	"Lorem ipsum Qui Excepteur in irure.",
 
 	"Lorem ipsum Amet sint sunt laboris qui " +
@@ -26,48 +26,28 @@ var lorem = []string{
 		"consectetur veniam voluptate aute consequat exercitation dolore " +
 		"dolore fugiat deserunt laboris do occaecat quis."}
 
-func TestString(t *testing.T) {
-
-	checkEnc := func(s String, err error) {
-		if err != nil {
-			t.Error(err)
-			return
+func TestStringGob(t *testing.T) {
+	for _, s := range lorem {
+		buf := new(bytes.Buffer)
+		enc := gob.NewEncoder(buf)
+		if err := enc.Encode((*String)(&s)); err != nil {
+			t.Fatal(err)
 		}
-		var slen, n uint32
-		if err = binary.Read(bytes.NewBuffer(s[:4]), binary.LittleEndian, &slen); err != nil {
-			t.Error(err)
-			return
+		var s1 String
+		dec := gob.NewDecoder(buf)
+		if err := dec.Decode(&s1); err != nil {
+			t.Fatal(err)
 		}
-
-		var aligned bool = len(s)%4 == 0
-
-		n = slen + 4
-		if n > 75 {
-			t.Logf("StringEncode(\"%s\"...)\n\nlen:%v\n"+
-				"Padding:%v\n32bitAligned?:%v\n\n",
-				s[4:75], slen, s[n:], aligned)
+		var sfmt string
+		if len(s) > 40 {
+			sfmt = fmt.Sprintf("\"%v...\" == \"%v...\": %v", s[:40], string(s1[:40]), s == string(s1))
 		} else {
-			t.Logf("StringEncode(\"%s\")\n\nlen:%v\n"+
-				"Padding:%v\n32bitAligned?:%v\n\n",
-				s[4:n-1], slen, s[n:], aligned)
+			sfmt = fmt.Sprintf("\"%v\" == \"%v\": %v", s, string(s1), s == string(s1))
 		}
-	}
-	gowlstr := make([]String, len(lorem))
-	for i, s := range lorem {
-
-		var err error
-		gowlstr[i], err = StringEncode(s)
-		checkEnc(gowlstr[i], err)
-
-		gos, err := StringDecode(gowlstr[i])
-		if err != nil {
-			t.Error(err)
-			continue
+		if s != string(s1) {
+			t.Fatal(sfmt)
 		}
-		if gos == s{
-		t.Log("StringDecode(gowlstr[i]) == lorem[i]: True\n")
-		}else{
-			t.Error("StringDecode(gowlstr[i]) == lorem[i]: False\n")
-		} 
+		t.Log(sfmt)
+
 	}
 }
