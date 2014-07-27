@@ -10,7 +10,7 @@ func main() {
 		panic(err)
 	}
 	defer d.Disconnect()
-	if _, err := d.Write([]byte("ping")); err != nil {
+	if _, err := d.Write([]byte("quit")); err != nil {
 		panic(err)
 	}
 }
