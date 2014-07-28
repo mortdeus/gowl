@@ -4,7 +4,7 @@ package gowl
 // is used for internal Wayland protocol features.
 type Display interface {
 	// The sync request asks the server to emit the 'done' event
-	// on the returned wl_callback object. Since requests are
+	// on the returned Callback object. Since requests are
 	// handled in-order and events are delivered in-order, this can
 	// be used as a barrier to ensure all previous requests and the
 	// resulting events have been handled.
@@ -13,7 +13,7 @@ type Display interface {
 	// compositor after the callback is fired and as such the client must not
 	// attempt to use it after that point.
 	//
-	// The callback_data passed in the callback is the event serial.
+	// The callbackData passed in the callback is the event serial.
 	Sync(callback NewId)
 
 	// This request creates a registry object that allows the client
@@ -22,7 +22,7 @@ type Display interface {
 	GetRegistry(registry NewId)
 
 	// The error event is sent out when a fatal (non-recoverable)
-	// error has occurred. The object_id argument is the object
+	// error has occurred. The objectId argument is the object
 	// where the error occurred, most often in response to a request
 	// to that object. The code identifies the error and is defined
 	// by the object interface. As such, each interface defines its
@@ -76,8 +76,8 @@ func (e DisplayErr) Error() string {
 // registry will send out global and global_remove events to
 // keep the client up to date with the changes. To mark the end
 // of the initial burst of events, the client can use the
-// wl_display.sync request immediately after calling
-// wl_display.get_registry.
+// Display.Sync request immediately after calling
+// Display.GetRegistry.
 //
 // A client can bind to a global object by using the bind
 // request. This creates a client-side handle that lets the object
@@ -126,21 +126,21 @@ type Compositor interface {
 	CreateRegion(id NewId)
 }
 
-// The wl_shm_pool object encapsulates a piece of memory shared
-// between the compositor and client. Through the wl_shm_pool
-// object, the client can allocate shared memory wl_buffer objects.
+// The ShmPool object encapsulates a piece of memory shared
+// between the compositor and client. Through the ShmPool
+// object, the client can allocate shared memory Buffer objects.
 // All objects created through the same pool share the same
 // underlying mapped memory. Reusing the mapped memory avoids the
 // setup/teardown overhead and is useful when interactively resizing
 // a surface or for many small buffers.
 type ShmPool interface {
-	// Create a wl_buffer object from the pool.
+	// Create a Buffer object from the pool.
 	//
 	// The buffer is created offset bytes into the pool and has
 	// width and height as specified. The stride arguments specifies
 	// the number of bytes from beginning of one row to the beginning
 	// of the next. The format is the pixel format of the buffer and
-	// must be one of those advertised through the wl_shm.format event.
+	// must be one of those advertised through the Shm.Format event.
 	//
 	// A buffer will keep a reference to the pool it was created from
 	// so it is valid to destroy the pool immediately after creating
@@ -163,14 +163,14 @@ type ShmPool interface {
 
 // A global singleton object that provides support for shared
 // memory.
-// Clients can create wl_shm_pool objects using the create_pool
+// Clients can create ShmPool objects using the createPool
 // request.
-// At connection setup time, the wl_shm object emits one or more
+// At connection setup time, the Shm object emits one or more
 // format events to inform clients about the valid pixel formats
 // that can be used for buffers.
 type Shm interface {
 
-	// Create a new wl_shm_pool object.
+	// Create a new ShmPool object.
 	// The pool can be used to create shared memory based buffer
 	// objects. The server will mmap size bytes of the passed file
 	// descriptor, to use as backing memory for the pool.
@@ -182,7 +182,7 @@ type Shm interface {
 	Format(format uint32)
 }
 
-// These errors can be emitted in response to wl_shm requests.
+// These errors can be emitted in response to Shm requests.
 type ShmErr uint
 
 const (
@@ -272,33 +272,33 @@ const (
 	YVU444      ShmFormat = 0x34325659
 )
 
-// A buffer provides the content for a wl_surface. Buffers are
-// created through factory interfaces such as wl_drm, wl_shm or
+// A buffer provides the content for a Surface. Buffers are
+// created through factory interfaces such as Drm, Shm or
 // similar. It has a width and a height and can be attached to a
-// wl_surface, but the mechanism by which a client provides and
+// Surface, but the mechanism by which a client provides and
 // updates the contents is defined by the buffer factory interface.
 type Buffer interface {
 	// Destroy a buffer. If and how you need to release the backing
 	// storage is defined by the buffer factory interface.
-	// For possible side-effects to a surface, see wl_surface.attach.
+	// For possible side-effects to a surface, see Surface.Attach.
 	Destroy()
 
-	// Sent when this wl_buffer is no longer used by the compositor.
+	// Sent when this Buffer is no longer used by the compositor.
 	// The client is now free to re-use or destroy this buffer and its
 	// backing storage.
 	//
 	// If a client receives a release event before the frame callback
-	// requested in the same wl_surface.commit that attaches this
-	// wl_buffer to a surface, then the client is immediately free to
+	// requested in the same Surface.Commit that attaches this
+	// Buffer to a surface, then the client is immediately free to
 	// re-use the buffer and its backing storage, and does not need a
 	// second buffer for the next surface content update. Typically
 	// this is possible, when the compositor maintains a copy of the
-	// wl_surface contents, e.g. as a GL texture. This is an important
-	// optimization for GL(ES) compositors with wl_shm clients.
+	// Surface contents, e.g. as a GL texture. This is an important
+	// optimization for GL(ES) compositors with Shm clients.
 	Release()
 }
 
-// A wl_data_offer represents a piece of data offered for transfer
+// A DataOffer represents a piece of data offered for transfer
 // by another client (the source client). It is used by the
 // copy-and-paste and drag-and-drop mechanisms. The offer
 // describes the different mime types that the data can be
@@ -327,12 +327,12 @@ type DataOffer interface {
 	// Destroy the data offer.
 	Destroy()
 
-	// Sent immediately after creating the wl_data_offer object. One
+	// Sent immediately after creating the DataOffer object. One
 	// event per offered mime type.
 	Offer(mimeType string)
 }
 
-// The wl_data_source object is the source side of a wl_data_offer.
+// The DataSource object is the source side of a DataOffer.
 // It is created by the source client in a data transfer and
 // provides a way to describe the offered data and a way to respond
 // to requests to transfer the data.
@@ -346,7 +346,7 @@ type DataSource interface {
 	// Destroy the data source.
 	Destroy()
 
-	// Sent when a target accepts pointer_focus or motion events. If
+	// Sent when a target accepts pointerFocus or motion events. If
 	// a target does not accept any of the offered types, type is NULL.
 	//
 	// Used for feedback during drag-and-drop.
@@ -362,10 +362,10 @@ type DataSource interface {
 	Cancelled()
 }
 
-// There is one wl_data_device per seat which can be obtained
-// from the global wl_data_device_manager singleton.
+// There is one DataDevice per seat which can be obtained
+// from the global DataDeviceManager singleton.
 //
-// A wl_data_device provides access to inter-client data transfer
+// A DataDevice provides access to inter-client data transfer
 // mechanisms such as copy-and-paste and drag-and-drop.
 type DataDevice interface {
 
@@ -385,15 +385,15 @@ type DataDevice interface {
 	// The icon surface is an optional (can be NULL) surface that
 	// provides an icon to be moved around with the cursor. Initially,
 	// the top-left corner of the icon surface is placed at the cursor
-	// hotspot, but subsequent wl_surface.attach request can move the
+	// hotspot, but subsequent Surface.Attach request can move the
 	// relative position. Attach requests must be confirmed with
-	// wl_surface.commit as usual.
+	// Surface.Commit as usual.
 	//
-	// The current and pending input regions of the icon wl_surface are
-	// cleared, and wl_surface.set_input_region is ignored until the
-	// wl_surface is no longer used as the icon surface. When the use
+	// The current and pending input regions of the icon Surface are
+	// cleared, and Surface.SetInputRegion is ignored until the
+	// Surface is no longer used as the icon surface. When the use
 	// as an icon ends, the current and pending input regions become
-	// undefined, and the wl_surface is unmapped.
+	// undefined, and the Surface is unmapped.
 	StartDrag(source Object, origin Object, icon Object, serial uint32)
 
 	// This request asks the compositor to set the selection
@@ -402,12 +402,12 @@ type DataDevice interface {
 	// To unset the selection, set the source to NULL.
 	SetSelection(source Object, serial uint32)
 
-	// The data_offer event introduces a new wl_data_offer object,
+	// The dataOffer event introduces a new DataOffer object,
 	// which will subsequently be used in either the
-	// data_device.enter event (for drag-and-drop)or the
-	// data_device.selection event (for selections). Immediately
-	// following the data_device_data_offer event, the new data_offer
-	// object will send out data_offer.offer events to describe the
+	// dataDevice.Enter event (for drag-and-drop)or the
+	// dataDevice.Selection event (for selections). Immediately
+	// following the dataDeviceDataOffer event, the new dataOffer
+	// object will send out dataOffer.Offer events to describe the
 	// mime types it offers.
 	DataOffer(id NewId)
 
@@ -419,7 +419,7 @@ type DataDevice interface {
 
 	// This event is sent when the drag-and-drop pointer leaves the
 	// surface and the session ends. The client must destroy the
-	// wl_data_offer introduced at enter time at this point.
+	// DataOffer introduced at enter time at this point.
 	Leave()
 
 	// This event is sent when the drag-and-drop pointer moves within
@@ -433,22 +433,22 @@ type DataDevice interface {
 	Drop()
 
 	// The selection event is sent out to notify the client of a new
-	// wl_data_offer for the selection for this device. The
-	// data_device.data_offer and the data_offer.offer events are
+	// DataOffer for the selection for this device. The
+	// dataDevice.DataOffer and the dataOffer.Offer events are
 	// sent out immediately before this event to introduce the data
 	// offer object. The selection event is sent to a client
 	// immediately before receiving keyboard focus and when a new
 	// selection is set while the client has keyboard focus. The
-	// data_offer is valid until a new data_offer or NULL is received
+	// dataOffer is valid until a new dataOffer or NULL is received
 	// or until the client loses keyboard focus.
 	Selection(id Object)
 }
 
-// The wl_data_device_manager is a singleton global object that
+// The DataDeviceManager is a singleton global object that
 // provides access to inter-client data transfer mechanisms such as
 // copy-and-paste and drag-and-drop. These mechanisms are tied to
-// a wl_seat and this interface lets a client get a wl_data_device
-// corresponding to a wl_seat.
+// a Seat and this interface lets a client get a DataDevice
+// corresponding to a Seat.
 type DataDeviceManager interface {
 
 	// Create a new data source.
@@ -460,7 +460,7 @@ type DataDeviceManager interface {
 // This interface is implemented by servers that provide
 // desktop-style user interfaces.
 //
-// It allows clients to associate a wl_shell_surface with
+// It allows clients to associate a ShellSurface with
 // a basic surface.
 type Shell interface {
 
@@ -470,7 +470,7 @@ type Shell interface {
 	GetShellSurface(id NewId, surface Object)
 }
 
-// An interface that may be implemented by a wl_surface, for
+// An interface that may be implemented by a Surface, for
 // implementations that provide a desktop-style user interface.
 //
 // It provides requests to treat surfaces like toplevel, fullscreen
@@ -478,9 +478,9 @@ type Shell interface {
 // metadata like title and class, etc.
 //
 // On the server side the object is automatically destroyed when
-// the related wl_surface is destroyed. On client side,
-// wl_shell_surface_destroy() must be called before destroying
-// the wl_surface object.
+// the related Surface is destroyed. On client side,
+// ShellSurface.Destroy() must be called before destroying
+// the Surface object.
 type ShellSurface interface {
 
 	// A client must respond to a ping event with a pong request or
@@ -536,12 +536,12 @@ type ShellSurface interface {
 	// the surface, either via a direct scaling operation or a change of
 	// the output mode. This will override any kind of output scaling, so
 	// that mapping a surface with a buffer size equal to the mode can
-	// fill the screen independent of buffer_scale.
+	// fill the screen independent of bufferScale.
 	//
 	// A method of "fill" means we don't scale up the buffer, however
 	// any output scale is applied. This means that you may run into
 	// an edge case where the application maps a buffer with the same
-	// size of the output mode but buffer_scale 1 (thus making a
+	// size of the output mode but bufferScale 1 (thus making a
 	// surface larger than the output). In this case it is allowed to
 	// downscale the results to fit the screen.
 	//
@@ -611,7 +611,7 @@ type ShellSurface interface {
 	// requests. A client is expected to reply with a pong request.
 	Ping(serial uint32)
 
-	// The configure event asks the client to resize its surface.
+	// The Configure event asks the client to resize its surface.
 	//
 	// The size is a hint, in the sense that the client is free to
 	// ignore it if it doesn't resize, pick a smaller size (to
@@ -630,7 +630,7 @@ type ShellSurface interface {
 	// in surface local coordinates.
 	Configure(edges uint32, width int32, height int32)
 
-	// The popup_done event is sent out when a popup grab is broken,
+	// The PopupDone event is sent out when a popup grab is broken,
 	// that is, when the user clicks a surface that doesn't belong
 	// to the client owning the popup surface.
 	PopupDone()
@@ -679,8 +679,8 @@ const (
 //
 // The size of a surface (and relative positions on it) is described
 // in surface local coordinates, which may differ from the buffer
-// local coordinates of the pixel content, in case a buffer_transform
-// or a buffer_scale is used.
+// local coordinates of the pixel content, in case a Buffer.Transform
+// or a Buffer.Scale is used.
 //
 // Surfaces are also used for some special purposes, e.g. as
 // cursor images for pointers, drag icons, etc.
@@ -692,9 +692,9 @@ type Surface interface {
 	// Set a buffer as the content of this surface.
 	//
 	// The new size of the surface is calculated based on the buffer
-	// size transformed by the inverse buffer_transform and the
-	// inverse buffer_scale. This means that the supplied buffer
-	// must be an integer multiple of the buffer_scale.
+	// size transformed by the inverse Buffer.Transform and the
+	// inverse Buffer.Scale. This means that the supplied buffer
+	// must be an integer multiple of the bufferScale.
 	//
 	// The x and y arguments specify the location of the new pending
 	// buffer's upper left corner, relative to the current buffer's upper
@@ -702,50 +702,50 @@ type Surface interface {
 	// x and y, combined with the new surface size define in which
 	// directions the surface's size changes.
 	//
-	// Surface contents are double-buffered state, see wl_surface.commit.
+	// Surface contents are double-buffered state, see Surface.Commit.
 	//
 	// The initial surface contents are void; there is no content.
-	// wl_surface.attach assigns the given wl_buffer as the pending
-	// wl_buffer. wl_surface.commit makes the pending wl_buffer the new
+	// Surface.Attach assigns the given Buffer as the pending
+	// Buffer. Surface.Commit makes the pending Buffer the new
 	// surface contents, and the size of the surface becomes the size
-	// calculated from the wl_buffer, as described above. After commit,
+	// calculated from the Buffer, as described above. After commit,
 	// there is no pending buffer until the next attach.
 	//
-	// Committing a pending wl_buffer allows the compositor to read the
-	// pixels in the wl_buffer. The compositor may access the pixels at
-	// any time after the wl_surface.commit request. When the compositor
+	// Committing a pending Buffer allows the compositor to read the
+	// pixels in the Buffer. The compositor may access the pixels at
+	// any time after the Surface.Commit request. When the compositor
 	// will not access the pixels anymore, it will send the
-	// wl_buffer.release event. Only after receiving wl_buffer.release,
-	// the client may re-use the wl_buffer. A wl_buffer that has been
+	// Buffer.Release event. Only after receiving Buffer.Release,
+	// the client may re-use the Buffer. A Buffer that has been
 	// attached and then replaced by another attach instead of committed
 	// will not receive a release event, and is not used by the
 	// compositor.
 	//
-	// Destroying the wl_buffer after wl_buffer.release does not change
+	// Destroying the Buffer after Buffer.Release does not change
 	// the surface contents. However, if the client destroys the
-	// wl_buffer before receiving the wl_buffer.release event, the surface
+	// Buffer before receiving the Buffer.Release event, the surface
 	// contents become undefined immediately.
 	//
-	// If wl_surface.attach is sent with a NULL wl_buffer, the
-	// following wl_surface.commit will remove the surface content.
+	// If Surface.Attach is sent with a NULL Buffer, the
+	// following Surface.Commit will remove the surface content.
 	Attach(buffer Object, x int32, y int32)
 
 	// This request is used to describe the regions where the pending
 	// buffer is different from the current surface contents, and where
 	// the surface therefore needs to be repainted. The pending buffer
-	// must be set by wl_surface.attach before sending damage. The
+	// must be set by Surface.Attach before sending damage. The
 	// compositor ignores the parts of the damage that fall outside of
 	// the surface.
 	//
-	// Damage is double-buffered state, see wl_surface.commit.
+	// Damage is double-buffered state, see Surface.Commit.
 	//
 	// The damage rectangle is specified in surface local coordinates.
 	//
 	// The initial value for pending damage is empty: no damage.
-	// wl_surface.damage adds pending damage: the new pending damage
+	// Surface.Damage adds pending damage: the new pending damage
 	// is the union of old pending damage and the given rectangle.
 	//
-	// wl_surface.commit assigns pending damage as the current damage,
+	// Surface.Commit assigns pending damage as the current damage,
 	// and clears pending damage. The server will clear the current
 	// damage as it repaints the surface.
 	Damage(x int32, y int32, width int32, height int32)
@@ -754,15 +754,15 @@ type Surface interface {
 	// frame, by creating a frame callback. This is useful for throttling
 	// redrawing operations, and driving animations.
 	//
-	// When a client is animating on a wl_surface, it can use the 'frame'
+	// When a client is animating on a Surface, it can use the 'frame'
 	// request to get notified when it is a good time to draw and commit the
 	// next frame of animation. If the client commits an update earlier than
 	// that, it is likely that some updates will not make it to the display,
 	// and the client is wasting resources by drawing too often.
 	//
-	// The frame request will take effect on the next wl_surface.commit.
+	// The frame request will take effect on the next Surface.Commit.
 	// The notification will only be posted for one frame unless
-	// requested again. For a wl_surface, the notifications are posted in
+	// requested again. For a Surface, the notifications are posted in
 	// the order the frame requests were committed.
 	//
 	// The server must send the notifications so that a client
@@ -780,7 +780,7 @@ type Surface interface {
 	// compositor after the callback is fired and as such the client must not
 	// attempt to use it after that point.
 	//
-	// The callback_data passed in the callback is the current time, in
+	// The callbackData passed in the callback is the current time, in
 	// milliseconds.
 	Frame(callback NewId)
 
@@ -798,15 +798,15 @@ type Surface interface {
 	// The compositor ignores the parts of the opaque region that fall
 	// outside of the surface.
 	//
-	// Opaque region is double-buffered state, see wl_surface.commit.
+	// Opaque region is double-buffered state, see Surface.Commit.
 	//
-	// wl_surface.set_opaque_region changes the pending opaque region.
-	// wl_surface.commit copies the pending region to the current region.
+	// Surface.SetOpaqueRegion changes the pending opaque region.
+	// Surface.Commit copies the pending region to the current region.
 	// Otherwise, the pending and current regions are never changed.
 	//
 	// The initial value for opaque region is empty. Setting the pending
-	// opaque region has copy semantics, and the wl_region object can be
-	// destroyed immediately. A NULL wl_region causes the pending opaque
+	// opaque region has copy semantics, and the Region object can be
+	// destroyed immediately. A NULL Region causes the pending opaque
 	// region to be set to empty.
 	SetOpaqueRegion(region Object)
 
@@ -819,18 +819,18 @@ type Surface interface {
 	//
 	// The input region is specified in surface local coordinates.
 	//
-	// Input region is double-buffered state, see wl_surface.commit.
+	// Input region is double-buffered state, see Surface.Commit.
 	//
-	// wl_surface.set_input_region changes the pending input region.
-	// wl_surface.commit copies the pending region to the current region.
+	// Surface.SetInputRegion changes the pending input region.
+	// Surface.Commit copies the pending region to the current region.
 	// Otherwise the pending and current regions are never changed,
 	// except cursor and icon surfaces are special cases, see
-	// wl_pointer.set_cursor and wl_data_device.start_drag.
+	// Pointer.SetCursor and DataDevice.StartDrag.
 	//
 	// The initial value for input region is infinite. That means the
 	// whole surface will accept input. Setting the pending input region
-	// has copy semantics, and the wl_region object can be destroyed
-	// immediately. A NULL wl_region causes the input region to be set
+	// has copy semantics, and the Region object can be destroyed
+	// immediately. A NULL Region causes the input region to be set
 	// to infinite.
 	SetInputRegion(region Object)
 
@@ -841,10 +841,10 @@ type Surface interface {
 	// state. After commit, the new pending state is as documented for each
 	// related request.
 	//
-	// On commit, a pending wl_buffer is applied first, all other state
+	// On commit, a pending Buffer is applied first, all other state
 	// second. This means that all coordinates in double-buffered state are
-	// relative to the new wl_buffer coming into use, except for
-	// wl_surface.attach itself. If there is no pending wl_buffer, the
+	// relative to the new Buffer coming into use, except for
+	// Surface.Attach itself. If there is no pending Buffer, the
 	// coordinates are relative to the current surface contents.
 	//
 	// All requests that need a commit to become effective are documented
@@ -856,14 +856,14 @@ type Surface interface {
 	// This request sets an optional transformation on how the compositor
 	// interprets the contents of the buffer attached to the surface. The
 	// accepted values for the transform parameter are the values for
-	// wl_output.transform.
+	// Output.Transform.
 	//
-	// Buffer transform is double-buffered state, see wl_surface.commit.
+	// Buffer transform is double-buffered state, see Surface.Commit.
 	//
 	// A newly created surface has its buffer transformation set to normal.
 	//
-	// wl_surface.set_buffer_transform changes the pending buffer
-	// transformation. wl_surface.commit copies the pending buffer
+	// Surface.SetBufferTransform changes the pending buffer
+	// transformation. Surface.Commit copies the pending buffer
 	// transformation to the current one. Otherwise, the pending and current
 	// values are never changed.
 	//
@@ -880,19 +880,19 @@ type Surface interface {
 	// of the buffer will become the surface width.
 	//
 	// If transform is not one of the values from the
-	// wl_output.transform enum the invalid_transform protocol error
+	// Output.Transform enum the invalidTransform protocol error
 	// is raised.
 	SetBufferTransform(transform int32)
 
 	// This request sets an optional scaling factor on how the compositor
 	// interprets the contents of the buffer attached to the window.
 	//
-	// Buffer scale is double-buffered state, see wl_surface.commit.
+	// Buffer scale is double-buffered state, see Surface.Commit.
 	//
 	// A newly created surface has its buffer scale set to 1.
 	//
-	// wl_surface.set_buffer_scale changes the pending buffer scale.
-	// wl_surface.commit copies the pending buffer scale to the current one.
+	// Surface.SetBufferScale changes the pending buffer scale.
+	// Surface.Commit copies the pending buffer scale to the current one.
 	// Otherwise, the pending and current values are never changed.
 	//
 	// The purpose of this request is to allow clients to supply higher
@@ -905,7 +905,7 @@ type Surface interface {
 	// a buffer that is larger (by a factor of scale in each dimension)
 	// than the desired surface size.
 	//
-	// If scale is not positive the invalid_scale protocol error is
+	// If scale is not positive the invalidScale protocol error is
 	// raised.
 	SetBufferScale(scale int32)
 
@@ -922,7 +922,7 @@ type Surface interface {
 	Leave(output Object)
 }
 
-// These errors can be emitted in response to wl_surface requests.
+// These errors can be emitted in response to Surface requests.
 type SurfaceErr uint
 
 const (
@@ -948,21 +948,21 @@ func (e DisplayErr) Error() string {
 // maintains a keyboard focus and a pointer focus.
 type Seat interface {
 
-	// The ID provided will be initialized to the wl_pointer interface
+	// The ID provided will be initialized to the Pointer interface
 	// for this seat.
 	//
 	// This request only takes effect if the seat has the pointer
 	// capability.
 	GetPointer(id NewId)
 
-	// The ID provided will be initialized to the wl_keyboard interface
+	// The ID provided will be initialized to the Keyboard interface
 	// for this seat.
 	//
 	// This request only takes effect if the seat has the keyboard
 	// capability.
 	GetKeyboard(id NewId)
 
-	// The ID provided will be initialized to the wl_touch interface
+	// The ID provided will be initialized to the Touch interface
 	// for this seat.
 	//
 	// This request only takes effect if the seat has the touch
@@ -990,11 +990,11 @@ const (
 	TouchCap
 )
 
-// The wl_pointer interface represents one or more input devices,
-// such as mice, which control the pointer location and pointer_focus
+// The Pointer interface represents one or more input devices,
+// such as mice, which control the pointer location and pointerFocus
 // of a seat.
 //
-// The wl_pointer interface generates motion, enter and leave
+// The Pointer interface generates motion, enter and leave
 // events for the surfaces that the pointer is located over,
 // and button and axis events for button presses, button releases
 // and scrolling.
@@ -1007,26 +1007,26 @@ type Pointer interface {
 	// there was a previous surface set with this request it is
 	// replaced. If surface is NULL, the pointer image is hidden.
 	//
-	// The parameters hotspot_x and hotspot_y define the position of
+	// The parameters hotspotX and hotspotY define the position of
 	// the pointer surface relative to the pointer location. Its
-	// top-left corner is always at (x, y)- (hotspot_x, hotspot_y),
+	// top-left corner is always at (x, y)- (hotspotX, hotspotY),
 	// where (x, y) are the coordinates of the pointer location, in surface
 	// local coordinates.
 	//
-	// On surface.attach requests to the pointer surface, hotspot_x
-	// and hotspot_y are decremented by the x and y parameters
+	// On surface.Attach requests to the pointer surface, hotspotX
+	// and hotspotY are decremented by the x and y parameters
 	// passed to the request. Attach must be confirmed by
-	// wl_surface.commit as usual.
+	// Surface.Commit as usual.
 	//
 	// The hotspot can also be updated by passing the currently set
-	// pointer surface to this request with new values for hotspot_x
-	// and hotspot_y.
+	// pointer surface to this request with new values for hotspotX
+	// and hotspotY.
 	//
-	// The current and pending input regions of the wl_surface are
-	// cleared, and wl_surface.set_input_region is ignored until the
-	// wl_surface is no longer used as the cursor. When the use as a
+	// The current and pending input regions of the Surface are
+	// cleared, and Surface.SetInputRegion is ignored until the
+	// Surface is no longer used as the cursor. When the use as a
 	// cursor ends, the current and pending input regions become
-	// undefined, and the wl_surface is unmapped.
+	// undefined, and the Surface is unmapped.
 	SetCursor(serial uint32, surface Object, hotspotX int32, hotspotY int32)
 
 	Release()
@@ -1036,7 +1036,7 @@ type Pointer interface {
 	//
 	// When an seat's focus enters a surface, the pointer image
 	// is undefined and a client should respond to this event by setting
-	// an appropriate pointer image with the set_cursor request.
+	// an appropriate pointer image with the setCursor request.
 	Enter(serial uint32, surface Object, surfaceX Fixed, surfaceY Fixed)
 
 	// Notification that this seat's pointer is no longer focused on
@@ -1047,7 +1047,7 @@ type Pointer interface {
 	Leave(serial uint32, surface Object)
 
 	// Notification of pointer location change. The arguments
-	// surface_x and surface_y are the location relative to the
+	// surfaceX and surfaceY are the location relative to the
 	// focused surface.
 	Motion(time uint32, surfaceX Fixed, surfaceY Fixed)
 
@@ -1094,7 +1094,7 @@ const (
 	HorizontalScroll
 )
 
-// The wl_keyboard interface represents one or more keyboards
+// The Keyboard interface represents one or more keyboards
 // associated with a seat.
 type Keyboard interface {
 	Release()
@@ -1125,7 +1125,7 @@ type Keyboard interface {
 
 	// Informs the client about the keyboard's repeat rate and delay.
 	//
-	// This event is sent as soon as the wl_keyboard object has been created,
+	// This event is sent as soon as the Keyboard object has been created,
 	// and is guaranteed to be received by the client before any key press
 	// event.
 	//
@@ -1134,12 +1134,12 @@ type Keyboard interface {
 	//
 	// This event can be sent later on as well with a new value if necessary,
 	// so clients should continue listening for the event past the creation
-	// of wl_keyboard.
+	// of Keyboard.
 	RepeatInfo(rate int32, delay int32)
 }
 
 // This specifies the format of the keymap provided to the
-// client with the wl_keyboard.keymap event.
+// client with the Keyboard.Keymap event.
 type KeymapFormat uint
 
 const (
@@ -1155,7 +1155,7 @@ const (
 	Pressed
 )
 
-// The wl_touch interface represents a touchscreen
+// The Touch interface represents a touchscreen
 // associated with a seat.
 //
 // Touch interactions can consist of one or more contacts.
@@ -1165,6 +1165,7 @@ const (
 // contact point can be identified by the ID of the sequence.
 
 type Touch interface {
+	// release the touch object
 	Release()
 
 	// A new touch point has appeared on the surface. This touch point is
@@ -1217,8 +1218,8 @@ type Output interface {
 	// The size of a mode is given in physical hardware units of
 	// the output device. This is not necessarily the same as
 	// the output size in the global compositor space. For instance,
-	// the output may be scaled, as described in wl_output.scale,
-	// or transformed , as described in wl_output.transform.
+	// the output may be scaled, as described in Output.Scale,
+	// or transformed , as described in Output.Transform.
 	Mode(flags uint32, width int32, height int32, refresh int32)
 
 	// This event is sent after all other properties has been
@@ -1242,7 +1243,7 @@ type Output interface {
 	//
 	// It is intended that scaling aware clients track the
 	// current output of a surface, and if it is on a scaled
-	// output it should use wl_surface.set_buffer_scale with
+	// output it should use Surface.SetBufferScale with
 	// the scale of the output. That way the compositor can
 	// avoid scaling the surface, and the client can supply
 	// a higher detail image.
@@ -1313,7 +1314,7 @@ type Region interface {
 }
 
 // The global interface exposing sub-surface compositing capabilities.
-// A wl_surface, that has sub-surfaces associated, is called the
+// A Surface, that has sub-surfaces associated, is called the
 // parent surface. Sub-surfaces can be arbitrarily nested and create
 // a tree of sub-surfaces.
 //
@@ -1322,13 +1323,13 @@ type Region interface {
 // sub-surfaces must always have a parent.
 //
 // A main surface with its sub-surfaces forms a (compound) window.
-// For window management purposes, this set of wl_surface objects is
+// For window management purposes, this set of Surface objects is
 // to be considered as a single window, and it should also behave as
 // such.
 //
 // The aim of sub-surfaces is to offload some of the compositing work
 // within a window from clients to the compositor. A prime example is
-// a video player with decorations and video in separate wl_surface
+// a video player with decorations and video in separate Surface
 // objects. This should allow the compositor to pass YUV video buffer
 // processing to dedicated overlay hardware when possible.
 
@@ -1336,12 +1337,12 @@ type Subcompositor interface {
 
 	// Informs the server that the client will not be using this
 	// protocol object anymore. This does not affect any other
-	// objects, wl_subsurface objects included.
+	// objects, Subsurface objects included.
 	Destroy()
 
 	// Create a sub-surface interface for the given surface, and
 	// associate it with the given parent surface. This turns a
-	// plain wl_surface into a sub-surface.
+	// plain Surface into a sub-surface.
 	//
 	// The to-be sub-surface must not already have a dedicated
 	// purpose, like any shell surface type, cursor image, drag icon,
@@ -1361,35 +1362,35 @@ func (err SubcompositorErr) Error() string {
 	}
 }
 
-// An additional interface to a wl_surface object, which has been
+// An additional interface to a Surface object, which has been
 // made a sub-surface. A sub-surface has one parent surface. A
 // sub-surface's size and position are not limited to that of the parent.
 // Particularly, a sub-surface is not automatically clipped to its
 // parent's area.
 //
-// A sub-surface becomes mapped, when a non-NULL wl_buffer is applied
+// A sub-surface becomes mapped, when a non-NULL Buffer is applied
 // and the parent surface is mapped. The order of which one happens
 // first is irrelevant. A sub-surface is hidden if the parent becomes
-// hidden, or if a NULL wl_buffer is applied. These rules apply
+// hidden, or if a NULL Buffer is applied. These rules apply
 // recursively through the tree of surfaces.
 //
-// The behaviour of wl_surface.commit request on a sub-surface
+// The behaviour of Surface.Commit request on a sub-surface
 // depends on the sub-surface's mode. The possible modes are
 // synchronized and desynchronized, see methods
-// wl_subsurface.set_sync and wl_subsurface.set_desync. Synchronized
-// mode caches the wl_surface state to be applied when the parent's
+// Subsurface.SetSync and Subsurface.SetDesync. Synchronized
+// mode caches the Surface state to be applied when the parent's
 // state gets applied, and desynchronized mode applies the pending
-// wl_surface state directly. A sub-surface is initially in the
+// Surface state directly. A sub-surface is initially in the
 // synchronized mode.
 //
 // Sub-surfaces have also other kind of state, which is managed by
-// wl_subsurface requests, as opposed to wl_surface requests. This
+// Subsurface requests, as opposed to Surface requests. This
 // state includes the sub-surface position relative to the parent
-// surface (wl_subsurface.set_position), and the stacking order of
-// the parent and its sub-surfaces (wl_subsurface.place_above and
-// .place_below) This state is applied when the parent surface's
-// wl_surface state is applied, regardless of the sub-surface's mode.
-// As the exception, set_sync and set_desync are effective immediately.
+// surface (Subsurface.SetPosition), and the stacking order of
+// the parent and its sub-surfaces (Subsurface.PlaceAbove and
+// .placeBelow) This state is applied when the parent surface's
+// Surface state is applied, regardless of the sub-surface's mode.
+// As the exception, setSync and setDesync are effective immediately.
 //
 // The main surface can be thought to be always in desynchronized mode,
 // since it does not have a parent in the sub-surfaces sense.
@@ -1401,22 +1402,22 @@ func (err SubcompositorErr) Error() string {
 // synchronized mode, and then assume that all its child and grand-child
 // sub-surfaces are synchronized, too, without explicitly setting them.
 //
-// If the wl_surface associated with the wl_subsurface is destroyed, the
-// wl_subsurface object becomes inert. Note, that destroying either object
+// If the Surface associated with the Subsurface is destroyed, the
+// Subsurface object becomes inert. Note, that destroying either object
 // takes effect immediately. If you need to synchronize the removal
 // of a sub-surface to the parent surface update, unmap the sub-surface
-// first by attaching a NULL wl_buffer, update parent, and then destroy
+// first by attaching a NULL Buffer, update parent, and then destroy
 // the sub-surface.
 //
-// If the parent wl_surface object is destroyed, the sub-surface is
+// If the parent Surface object is destroyed, the sub-surface is
 // unmapped.
 type Subsurface interface {
 
-	// The sub-surface interface is removed from the wl_surface object
+	// The sub-surface interface is removed from the Surface object
 	// that was turned into a sub-surface with
-	// wl_subcompositor.get_subsurface request. The wl_surface's association
-	// to the parent is deleted, and the wl_surface loses its role as
-	// a sub-surface. The wl_surface is unmapped.
+	// Subcompositor.GetSubsurface request. The Surface's association
+	// to the parent is deleted, and the Surface loses its role as
+	// a sub-surface. The Surface is unmapped.
 	Destroy()
 
 	// This schedules a sub-surface position change.
@@ -1425,10 +1426,10 @@ type Subsurface interface {
 	// coordinate system. The coordinates are not restricted to the parent
 	// surface area. Negative values are allowed.
 	//
-	// The next wl_surface.commit on the parent surface will reset
+	// The next Surface.Commit on the parent surface will reset
 	// the sub-surface's position to the scheduled coordinates.
 	//
-	// If more than one set_position request is invoked by the client before
+	// If more than one setPosition request is invoked by the client before
 	// the commit of the parent surface, the position of a new request always
 	// replaces the scheduled position from any previous request.
 	//
@@ -1444,20 +1445,20 @@ type Subsurface interface {
 	// The z-order is double-buffered. Requests are handled in order and
 	// applied immediately to a pending state, then committed to the active
 	// state on the next commit of the parent surface.
-	// See wl_surface.commit and wl_subcompositor.get_subsurface.
+	// See Surface.Commit and Subcompositor.GetSubsurface.
 	//
 	// A new sub-surface is initially added as the top-most in the stack
 	// of its siblings and parent.
 	PlaceAbove(sibling Object)
 
 	// The sub-surface is placed just below of the reference surface.
-	// See wl_subsurface.place_above.
+	// See Subsurface.PlaceAbove.
 	PlaceBelow(sibling Object)
 
 	// Change the commit behaviour of the sub-surface to synchronized
 	// mode, also described as the parent dependant mode.
 	//
-	// In synchronized mode, wl_surface.commit on a sub-surface will
+	// In synchronized mode, Surface.Commit on a sub-surface will
 	// accumulate the committed state in a cache, but the state will
 	// not be applied and hence will not change the compositor output.
 	// The cached state is applied to the sub-surface immediately after
@@ -1466,25 +1467,25 @@ type Subsurface interface {
 	// Applying the cached state will invalidate the cache, so further
 	// parent surface commits do not (re-) apply old state.
 	//
-	// See wl_subsurface for the recursive effect of this mode.
+	// See Subsurface for the recursive effect of this mode.
 	SetSync()
 
 	// Change the commit behaviour of the sub-surface to desynchronized
 	// mode, also described as independent or freely running mode.
 	//
-	// In desynchronized mode, wl_surface.commit on a sub-surface will
+	// In desynchronized mode, Surface.Commit on a sub-surface will
 	// apply the pending state directly, without caching, as happens
-	// normally with a wl_surface. Calling wl_surface.commit on the
-	// parent surface has no effect on the sub-surface's wl_surface
+	// normally with a Surface. Calling Surface.Commit on the
+	// parent surface has no effect on the sub-surface's Surface
 	// state. This mode allows a sub-surface to be updated on its own.
 	//
-	// If cached state exists when wl_surface.commit is called in
+	// If cached state exists when Surface.Commit is called in
 	// desynchronized mode, the pending state is added to the cached
 	// state, and applied as whole. This invalidates the cache.
 	//
 	// Note: even if a sub-surface is set to desynchronized, a parent
 	// sub-surface may override it to behave as synchronized. For details,
-	// see wl_subsurface.
+	// see Subsurface.
 	//
 	// If a surface's parent surface behaves as desynchronized, then
 	// the cached state is applied on set_desync.
@@ -1500,6 +1501,6 @@ const (
 func (err SubcompositorErr) Error() string {
 	switch err {
 	case BadSurface:
-		return "wl_surface is not a sibling or the parent"
+		return "Surface is not a sibling or the parent"
 	}
 }
