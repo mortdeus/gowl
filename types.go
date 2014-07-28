@@ -22,32 +22,64 @@ func (s *String) GobEncode() ([]byte, error) {
 	buf := new(bytes.Buffer)
 
 	bs, err := syscall.ByteSliceFromString(string(*s))
+	padN := (4 - (len(bs) % 4))
 	if err != nil {
 		return nil, err
 	}
+	//TODO(Mortdeus): Do we count padN offset in len?
 	if err := binary.Write(buf, binary.LittleEndian, uint32(len(bs))); err != nil {
 		return nil, err
 	}
 	if err := binary.Write(buf, binary.LittleEndian, bs); err != nil {
 		return nil, err
 	}
-	pad := (4 - (len(bs) % 4)) &^ 04
-	if err := binary.Write(buf, binary.LittleEndian, uint32(pad)); err != nil {
+
+	pad := make([]byte, padN)
+	if err := binary.Write(buf, binary.LittleEndian, pad); err != nil {
 		return nil, err
 	}
 	return buf.Bytes(), nil
 }
-func (s1 *String) GobDecode(s []byte) error {
+func (s *String) GobDecode(s1 []byte) error {
 
 	var slen uint32
-	if err := binary.Read(bytes.NewReader(s[:4]), binary.LittleEndian, &slen); err != nil {
+	if err := binary.Read(bytes.NewReader(s1[:4]), binary.LittleEndian, &slen); err != nil {
 		return err
 	}
 	var bs = make([]byte, slen)
-	if err := binary.Read(bytes.NewReader(s[4:4+slen]), binary.LittleEndian, bs); err != nil {
+	if err := binary.Read(bytes.NewReader(s1[4:4+slen]), binary.LittleEndian, bs); err != nil {
 		return err
 	}
-	*s1 = String(bs[:len(bs)-1])
+	*s = String(bs[:len(bs)-1])
+	return nil
+}
+func (a *Array) GobEncode() ([]byte, error) {
+	buf := new(bytes.Buffer)
+	padN := (4 - (len(*a) % 4))
+	//TODO(Mortdeus): Do we count padN offset in len?
+	if err := binary.Write(buf, binary.LittleEndian, uint32(len(*a))); err != nil {
+		return nil, err
+	}
+	if err := binary.Write(buf, binary.LittleEndian, *a); err != nil {
+		return nil, err
+	}
+	pad := make([]byte, padN)
+	if err := binary.Write(buf, binary.LittleEndian, pad); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+func (a *Array) GobDecode(a1 []byte) error {
+
+	var slen uint32
+	if err := binary.Read(bytes.NewReader(a1[:4]), binary.LittleEndian, &slen); err != nil {
+		return err
+	}
+	var bs = make([]byte, slen)
+	if err := binary.Read(bytes.NewReader(a1[4:4+slen]), binary.LittleEndian, bs); err != nil {
+		return err
+	}
+	*a = Array(bs[:len(bs)])
 	return nil
 }
 
