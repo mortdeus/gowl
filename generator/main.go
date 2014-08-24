@@ -25,23 +25,13 @@ func generate() {
 	}
 
 	fmtinator(&proto)
-	for _, in := range proto.Interface {
 
-		f1, err := os.OpenFile(
-			"zprotocol"+".go", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
-		if err != nil {
-			panic(err)
-		}
-		if s, err := f1.Stat(); err != nil {
-			panic(err)
-		} else if s.Size() <= 0 {
-			if _, err := f1.WriteString("package gowl"); err != nil {
-				panic(err)
-			}
-		}
+	of := os.Stdout
+	fmt.Fprintln(of, "package gowl")
 
+	for _, iface := range proto.Interface {
 		tmpl := template.Must(template.New("pkg").Parse(pkgTemplate))
-		if err := tmpl.Execute(f1, in); err != nil {
+		if err := tmpl.Execute(of, iface); err != nil {
 			panic(err)
 		}
 	}
