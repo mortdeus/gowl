@@ -21,8 +21,10 @@ func generate() {
 	if err := xml.NewDecoder(f).Decode(&proto); err != nil {
 		panic(err)
 	}
+	
+	fmtinator(&proto)
 	for _, in := range proto.Interface {
-		fmtinator(&in)
+
 		f1, err := os.OpenFile(
 			"zprotocol"+".go", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
 		if err != nil {
@@ -45,6 +47,11 @@ func generate() {
 
 func fmtinator(typ interface{}) {
 	switch p := typ.(type) {
+	case *Protocol:
+		for i := range p.Interface {
+			fmtinator(&p.Interface[i])
+		}
+
 	case *Interface:
 		p.Name = stripAndCap(p.Name, false)
 		for i := range p.Event {
