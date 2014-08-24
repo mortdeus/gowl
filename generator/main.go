@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/xml"
+	"fmt"
 	"os"
+	"reflect"
 	"strings"
 	"text/template"
 )
@@ -21,7 +23,7 @@ func generate() {
 	if err := xml.NewDecoder(f).Decode(&proto); err != nil {
 		panic(err)
 	}
-	
+
 	fmtinator(&proto)
 	for _, in := range proto.Interface {
 
@@ -84,6 +86,9 @@ func fmtinator(typ interface{}) {
 
 	case *Entry:
 		p.Name = stripAndCap(p.Name, false)
+
+	default:
+		panic(fmt.Sprintf("Error: Trying to format unknown type (%s)\n", reflect.TypeOf(p)))
 	}
 }
 
