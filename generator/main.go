@@ -48,35 +48,35 @@ func generate() {
 func fmtinator(typ interface{}) {
 	switch p := typ.(type) {
 	case *Protocol:
-		for i := range p.Interface {
-			fmtinator(&p.Interface[i])
+		for _, i := range p.Interface {
+			fmtinator(i)
 		}
 
 	case *Interface:
 		p.Name = stripAndCap(p.Name, false)
-		for i := range p.Event {
-			fmtinator(&p.Event[i])
+		for _, i := range p.Event {
+			fmtinator(i)
 		}
-		for i := range p.Request {
-			fmtinator(&p.Request[i])
+		for _, i := range p.Request {
+			fmtinator(i)
 		}
-		for i := range p.Enum {
-			fmtinator(&p.Enum[i])
+		for _, i := range p.Enum {
+			fmtinator(i)
 		}
 	case *Event:
 		p.Name = stripAndCap(p.Name, false)
-		for i := range p.Arg {
-			fmtinator(&p.Arg[i])
+		for _, i := range p.Arg {
+			fmtinator(i)
 		}
 	case *Request:
 		p.Name = stripAndCap(p.Name, false)
-		for i := range p.Arg {
-			fmtinator(&p.Arg[i])
+		for _, i := range p.Arg {
+			fmtinator(i)
 		}
 	case *Enum:
 		p.Name = stripAndCap(p.Name, false)
-		for i := range p.Entry {
-			fmtinator(&p.Entry[i])
+		for _, i := range p.Entry {
+			fmtinator(i)
 		}
 	case *Arg:
 		p.Name = stripAndCap(p.Name, true)

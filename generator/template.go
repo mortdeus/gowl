@@ -5,35 +5,35 @@ import (
 )
 
 type Protocol struct {
-	XMLName   xml.Name    `xml:"protocol"`
-	Copyright string      `xml:"copyright"`
-	Interface []Interface `xml:"interface"`
+	XMLName   xml.Name     `xml:"protocol"`
+	Copyright string       `xml:"copyright"`
+	Interface []*Interface `xml:"interface"`
 }
 
 type Interface struct {
-	Name        string    `xml:"name,attr"`
-	Description string    `xml:"description"`
-	Request     []Request `xml:"request"`
-	Event       []Event   `xml:"event"`
-	Enum        []Enum    `xml:"enum"`
+	Name        string     `xml:"name,attr"`
+	Description string     `xml:"description"`
+	Request     []*Request `xml:"request"`
+	Event       []*Event   `xml:"event"`
+	Enum        []*Enum    `xml:"enum"`
 }
 
 type Request struct {
 	Name        string `xml:"name,attr"`
 	Description string `xml:"description"`
-	Arg         []Arg  `xml:"arg"`
+	Arg         []*Arg `xml:"arg"`
 }
 
 type Event struct {
 	Name        string `xml:"name,attr"`
 	Description string `xml:"description"`
-	Arg         []Arg  `xml:"arg"`
+	Arg         []*Arg `xml:"arg"`
 }
 
 type Enum struct {
-	Name        string  `xml:"name,attr"`
-	Description string  `xml:"description"`
-	Entry       []Entry `xml:"entry"`
+	Name        string   `xml:"name,attr"`
+	Description string   `xml:"description"`
+	Entry       []*Entry `xml:"entry"`
 }
 
 type Entry struct {
