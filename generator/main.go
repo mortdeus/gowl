@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/xml"
 	"os"
 	"strings"
@@ -22,11 +21,7 @@ func generate() {
 		panic(err)
 	}
 
-	buf := new(bytes.Buffer)
-	if _, err := buf.ReadFrom(f); err != nil {
-		panic(err)
-	}
-	if err := xml.NewDecoder(buf).Decode(p); err != nil {
+	if err := xml.NewDecoder(f).Decode(p); err != nil {
 		panic(err)
 	}
 	for _, in := range p.Interface {
