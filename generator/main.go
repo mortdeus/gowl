@@ -16,12 +16,14 @@ func generate() {
 	f, err := os.Open("wayland.xml")
 	defer f.Close()
 	if err != nil {
-		panic(err)
+		fmt.Fprintln(os.Stderr, "Error:", err.Error())
+		os.Exit(-1)
 	}
 
 	var proto Protocol
 	if err := xml.NewDecoder(f).Decode(&proto); err != nil {
-		panic(err)
+		fmt.Fprintln(os.Stderr, "Decode Error:", err.Error())
+		os.Exit(-1)
 	}
 
 	fmtinator(&proto)
@@ -32,7 +34,8 @@ func generate() {
 	for _, iface := range proto.Interface {
 		tmpl := template.Must(template.New("pkg").Parse(pkgTemplate))
 		if err := tmpl.Execute(of, iface); err != nil {
-			panic(err)
+			fmt.Fprintln(os.Stderr, "Template Error:", err.Error())
+			os.Exit(-1)
 		}
 	}
 }
@@ -78,7 +81,8 @@ func fmtinator(typ interface{}) {
 		p.Name = stripAndCap(p.Name, false)
 
 	default:
-		panic(fmt.Sprintf("Error: Trying to format unknown type (%s)\n", reflect.TypeOf(p)))
+		fmt.Fprintf(os.Stderr, "Error: Trying to format unknown type (%s)\n", reflect.TypeOf(p))
+		os.Exit(-1)
 	}
 }
 
