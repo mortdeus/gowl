@@ -31,12 +31,10 @@ func generate() {
 	of := os.Stdout
 	fmt.Fprintln(of, "package gowl")
 
-	for _, iface := range proto.Interface {
-		tmpl := template.Must(template.New("pkg").Parse(pkgTemplate))
-		if err := tmpl.Execute(of, iface); err != nil {
-			fmt.Fprintln(os.Stderr, "Template Error:", err.Error())
-			os.Exit(-1)
-		}
+	tmpl := template.Must(template.New("pkg").Parse(pkgTemplate))
+	if err := tmpl.Execute(of, proto); err != nil {
+		fmt.Fprintln(os.Stderr, "Template Error:", err.Error())
+		os.Exit(-1)
 	}
 }
 

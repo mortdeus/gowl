@@ -50,43 +50,42 @@ type Arg struct {
 
 var (
 	pkgTemplate string = `
-	{{if .Description}}/*
-	{{.Description}}
-	*/{{end}}
-	type {{.Name}} interface{
-		{{range $.Request}}
-			{{if .Description}}
-				/*
-				{{.Description}}
-				*/
-			{{end}}
-			{{.Name}}({{range .Arg}}{{.Name}} {{.Type}},{{end}})
-		
-		{{end}}
-		{{range $.Event}}
-			{{if .Description}}
-				/*
-				{{.Description}}
-				*/
-			{{end}}
-			{{.Name}}({{range .Arg}}{{.Name}} {{.Type}},{{end}})
-			
-		{{end}}	
-	}
+   {{range $iface := $.Interface}}
+	   {{if $iface.Description}}/*
+	   {{$iface.Description}}
+	   */{{end}}
+	   type {{$iface.Name}} interface{
+         {{range $req := $iface.Request}}
+	   		{{if $req.Description}}
+	   			/*
+	   			{{$req.Description}}
+	   			*/
+	   		{{end}}
+	   		{{$req.Name}}({{range .Arg}}{{.Name}} {{.Type}},{{end}})
 
-		{{range $e := $.Enum}}
-			{{if .Description}}
-				/*
-				{{.Description}}
-				*/
-			{{end}}
-			
-			const(
-				{{range .Entry}}{{$e.Name}}_{{.Name}} = {{.Value}};{{end}}
-			)
-		{{end}}
+	   	{{end}}
+	   	{{range $iface.Event}}
+	   		{{if .Description}}
+	   			/*
+	   			{{.Description}}
+	   			*/
+	   		{{end}}
+	   		{{.Name}}({{range .Arg}}{{.Name}} {{.Type}},{{end}})
 
-		
-	
+	   	{{end}}
+	   }
+
+	   	{{range $e := $iface.Enum}}
+	   		{{if .Description}}
+	   			/*
+	   			{{.Description}}
+	   			*/
+	   		{{end}}
+
+	   		const(
+	   			{{range .Entry}}{{$e.Name}}_{{.Name}} = {{.Value}};{{end}}
+	   		)
+	   	{{end}}
+   {{end}}
 	`
 )
