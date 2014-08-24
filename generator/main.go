@@ -4,11 +4,8 @@ import (
 	"encoding/xml"
 	"os"
 	"strings"
-	"sync"
 	"text/template"
 )
-
-var wg = new(sync.WaitGroup)
 
 func main() {
 	generate()
@@ -25,9 +22,7 @@ func generate() {
 		panic(err)
 	}
 	for _, in := range proto.Interface {
-		wg := new(sync.WaitGroup)
-		fmtinator(&in, wg)
-		wg.Wait()
+		fmtinator(&in)
 		f1, err := os.OpenFile(
 			"zprotocol"+".go", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
 		if err != nil {
@@ -48,36 +43,33 @@ func generate() {
 	}
 }
 
-func fmtinator(typ interface{}, wg *sync.WaitGroup) {
-	wg.Add(1)
+func fmtinator(typ interface{}) {
 	switch p := typ.(type) {
 	case *Interface:
 		p.Name = stripAndCap(p.Name, false)
-		wg1 := new(sync.WaitGroup)
 		for i := range p.Event {
-			go fmtinator(&p.Event[i], wg1)
+			fmtinator(&p.Event[i])
 		}
 		for i := range p.Request {
-			go fmtinator(&p.Request[i], wg1)
+			fmtinator(&p.Request[i])
 		}
 		for i := range p.Enum {
-			go fmtinator(&p.Enum[i], wg1)
+			fmtinator(&p.Enum[i])
 		}
-		wg1.Wait()
 	case *Event:
 		p.Name = stripAndCap(p.Name, false)
 		for i := range p.Arg {
-			go fmtinator(&p.Arg[i], wg)
+			fmtinator(&p.Arg[i])
 		}
 	case *Request:
 		p.Name = stripAndCap(p.Name, false)
 		for i := range p.Arg {
-			go fmtinator(&p.Arg[i], wg)
+			fmtinator(&p.Arg[i])
 		}
 	case *Enum:
 		p.Name = stripAndCap(p.Name, false)
 		for i := range p.Entry {
-			go fmtinator(&p.Entry[i], wg)
+			fmtinator(&p.Entry[i])
 		}
 	case *Arg:
 		p.Name = stripAndCap(p.Name, true)
@@ -86,7 +78,6 @@ func fmtinator(typ interface{}, wg *sync.WaitGroup) {
 	case *Entry:
 		p.Name = stripAndCap(p.Name, false)
 	}
-	wg.Done()
 }
 
 func stripAndCap(s string, mixedCase bool) string {
