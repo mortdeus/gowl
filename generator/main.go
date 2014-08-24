@@ -14,17 +14,17 @@ func main() {
 	generate()
 }
 func generate() {
-	p := new(Protocol)
 	f, err := os.Open("wayland.xml")
 	defer f.Close()
 	if err != nil {
 		panic(err)
 	}
 
-	if err := xml.NewDecoder(f).Decode(p); err != nil {
+	var proto Protocol
+	if err := xml.NewDecoder(f).Decode(&proto); err != nil {
 		panic(err)
 	}
-	for _, in := range p.Interface {
+	for _, in := range proto.Interface {
 		wg := new(sync.WaitGroup)
 		fmtinator(&in, wg)
 		wg.Wait()
